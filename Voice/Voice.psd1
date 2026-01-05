@@ -17,7 +17,7 @@
         # Azure Speech Services
         'Out-AzureVoice',
         'Get-AzureVoice',
-        'Invoke-AzureVoiceRecognition',
+        'Wait-AzureVoiceInput',
 
         # Utilities
         'Get-VoiceConfig',

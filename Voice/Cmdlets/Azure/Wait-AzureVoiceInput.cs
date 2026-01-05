@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace Voice.Cmdlets.Azure
 {
-    [Cmdlet(VerbsLifecycle.Invoke, "AzureVoiceRecognition")]
-    public class InvokeAzureVoiceRecognitionCmdlet : AzureCmdlet
+    [Cmdlet(VerbsLifecycle.Wait, "AzureVoiceInput")]
+    public class WaitAzureVoiceInputCmdlet : AzureCmdlet
     {
         [Parameter()]
         public string Language { get; set; } = "en-US";
