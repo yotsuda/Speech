@@ -1,0 +1,34 @@
+# Build results
+bin/
+obj/
+*.dll
+*.pdb
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# PowerShell
+*.ps1xml
+
+# Temporary files
+*.backup
+*.bak
+debug-*.xml
+memo.txt
+
+# Large example files
+json_example.json
+
+# Development files
+IMPLEMENTATION*.md
+Test-*.ps1
+
+# Staging folder
+Staging/
