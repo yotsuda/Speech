@@ -21,6 +21,7 @@
 
         # Utilities
         'Get-VoiceConfig',
+        'Set-VoiceConfig',
         'Get-VoiceQueueState',
         'Clear-VoiceQueue',
         'Test-Microphone'

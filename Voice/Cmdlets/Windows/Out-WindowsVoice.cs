@@ -105,14 +105,7 @@ namespace Voice.Cmdlets.Windows
 
                 // Speak
                 synthesizer.Speak(Text);
-                
-                // Update config if parameters were specified (ConfigManager handles save)
-                if (ConfigManager.UpdateWindowsVoiceIfSpecified(Voice) |
-                    ConfigManager.UpdateRateIfSpecified(Rate) |
-                    ConfigManager.UpdateVolumeIfSpecified(Volume))
-                {
-                    WriteVerbose($"Configuration saved to: {ConfigManager.GetConfigFilePath()}");
-                }
+
             }
             catch (Exception ex)
             {

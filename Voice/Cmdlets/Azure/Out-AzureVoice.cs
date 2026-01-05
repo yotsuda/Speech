@@ -38,16 +38,7 @@ namespace Voice.Cmdlets.Azure
                 var task = SynthesizeSpeechAsync(voice, rate, volume, pitch);
                 task.GetAwaiter().GetResult();
                 
-                // Update config if parameters were specified
-                if (ConfigManager.UpdateAzureKeyIfSpecified(Key) |
-                    ConfigManager.UpdateAzureRegionIfSpecified(Region) |
-                    ConfigManager.UpdateAzureVoiceIfSpecified(Voice) |
-                    ConfigManager.UpdateAzurePitchIfSpecified(Pitch) |
-                    ConfigManager.UpdateRateIfSpecified(Rate) |
-                    ConfigManager.UpdateVolumeIfSpecified(Volume))
-                {
-                    WriteVerbose($"Configuration saved to: {ConfigManager.GetConfigFilePath()}");
-                }
+
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("Invalid audio format") || ex.Message.Contains("empty audio data"))
             {
