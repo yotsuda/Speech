@@ -32,3 +32,4 @@ Test-*.ps1
 
 # Staging folder
 Staging/
+debug-*.ps1
