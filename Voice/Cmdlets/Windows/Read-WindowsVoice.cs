@@ -118,7 +118,7 @@ namespace Voice.Cmdlets.Windows
             // Monitor loop with spinner
             while (!_stopRequested)
             {
-                // Check for Enter key
+                // Check for key input
                 if (Console.KeyAvailable)
                 {
                     var key = Console.ReadKey(intercept: true);
@@ -126,6 +126,22 @@ namespace Voice.Cmdlets.Windows
                     {
                         _stopRequested = true;
                         break;
+                    }
+                    else if (key.Key == ConsoleKey.Backspace)
+                    {
+                        // Delete last recognized result
+                        lock (_lock)
+                        {
+                            if (_results.Count > 0)
+                            {
+                                _results.RemoveAt(_results.Count - 1);
+                                // Clear current line, move up, clear that line too
+                                Console.Write("\r\x1b[2K");  // Clear entire current line
+                                Console.Write("\x1b[A");     // Move cursor up
+                                Console.Write("\r\x1b[2K");  // Clear entire previous line
+                            }
+                            _currentHypothesis = "";
+                        }
                     }
                 }
 
