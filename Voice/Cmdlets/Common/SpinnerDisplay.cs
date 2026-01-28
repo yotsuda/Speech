@@ -28,10 +28,10 @@ namespace Voice.Cmdlets.Common
             {
                 display = $"> {text} {spinner}";
             }
-            var padding = _lastDisplayLength > display.Length 
-                ? new string(' ', _lastDisplayLength - display.Length) 
+            var padding = _lastDisplayLength > display.Length
+                ? new string(' ', _lastDisplayLength - display.Length)
                 : "";
-            
+
             Console.Write($"\r{display}{padding}");
             _lastDisplayLength = display.Length;
         }
@@ -44,12 +44,12 @@ namespace Voice.Cmdlets.Common
         public void DisplayFinal(string text, bool showNextPrompt = false)
         {
             var display = $"> {text}";
-            var padding = _lastDisplayLength > display.Length 
-                ? new string(' ', _lastDisplayLength - display.Length) 
+            var padding = _lastDisplayLength > display.Length
+                ? new string(' ', _lastDisplayLength - display.Length)
                 : "";
-            
+
             Console.WriteLine($"\r{display}{padding}");
-            
+
             if (showNextPrompt)
             {
                 Console.Write("> ");

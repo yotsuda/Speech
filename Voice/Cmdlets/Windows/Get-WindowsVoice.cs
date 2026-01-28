@@ -27,7 +27,7 @@ namespace Voice.Cmdlets.Windows
                     var voiceInfo = voice.VoiceInfo;
 
                     // Culture filter
-                    if (!string.IsNullOrEmpty(Culture) && 
+                    if (!string.IsNullOrEmpty(Culture) &&
                         !voiceInfo.Culture.Name.Equals(Culture, StringComparison.OrdinalIgnoreCase))
                     {
                         continue;

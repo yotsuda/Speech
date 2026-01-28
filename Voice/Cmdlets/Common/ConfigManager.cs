@@ -56,14 +56,14 @@ namespace Voice.Cmdlets.Common
                     if (_cachedConfig == null)
                     {
                         var loaded = LoadConfigFromFile();
-                        
+
                         if (loaded == null)
                         {
                             // Create default config and save it immediately
                             loaded = CreateDefaultConfig();
                             SaveConfigToFile(loaded);
                         }
-                        
+
                         _cachedConfig = loaded;
                     }
                 }
@@ -90,7 +90,7 @@ namespace Voice.Cmdlets.Common
         {
             string configPath = GetConfigFilePath();
             string? directory = Path.GetDirectoryName(configPath);
-            
+
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
@@ -138,31 +138,31 @@ namespace Voice.Cmdlets.Common
                 var synthesizer = global::Voice.Cmdlets.Windows.WindowsAudioManager.GetSynthesizer();
                 var currentCulture = System.Globalization.CultureInfo.CurrentUICulture;
                 var voices = synthesizer?.GetInstalledVoices();
-                
+
                 if (voices == null || voices.Count == 0)
                     return null;
 
                 // 1. Exact culture match (e.g., ja-JP)
-                var exactMatch = voices.FirstOrDefault(v => 
-                    v.Enabled && 
+                var exactMatch = voices.FirstOrDefault(v =>
+                    v.Enabled &&
                     v.VoiceInfo.Culture.Name.Equals(currentCulture.Name, StringComparison.OrdinalIgnoreCase));
-                
+
                 if (exactMatch != null)
                     return exactMatch.VoiceInfo.Name;
 
                 // 2. Language match (e.g., ja)
-                var languageMatch = voices.FirstOrDefault(v => 
-                    v.Enabled && 
+                var languageMatch = voices.FirstOrDefault(v =>
+                    v.Enabled &&
                     v.VoiceInfo.Culture.TwoLetterISOLanguageName == currentCulture.TwoLetterISOLanguageName);
-                
+
                 if (languageMatch != null)
                     return languageMatch.VoiceInfo.Name;
 
                 // 3. English voice as fallback
-                var englishVoice = voices.FirstOrDefault(v => 
-                    v.Enabled && 
+                var englishVoice = voices.FirstOrDefault(v =>
+                    v.Enabled &&
                     v.VoiceInfo.Culture.TwoLetterISOLanguageName == "en");
-                
+
                 if (englishVoice != null)
                     return englishVoice.VoiceInfo.Name;
 
@@ -182,7 +182,7 @@ namespace Voice.Cmdlets.Common
         {
             var culture = System.Globalization.CultureInfo.CurrentUICulture;
 
-            // TODO: �n�[�h�R�[�h�����AAPI �Ń��P�[���ɓK���� Voice ���擾���ׂ����B            
+            // TODO: �n�[�h�R�[�h�����AAPI �Ń��P�[���ɓK���� Voice ���擾���ׂ����B
             return culture.TwoLetterISOLanguageName switch
             {
                 "ja" => "ja-JP-NanamiNeural",
@@ -205,7 +205,7 @@ namespace Voice.Cmdlets.Common
         private static VoiceConfig? LoadConfigFromFile()
         {
             string configPath = GetConfigFilePath();
-            
+
             if (!File.Exists(configPath))
             {
                 return null;
@@ -230,14 +230,14 @@ namespace Voice.Cmdlets.Common
             lock (_cacheLock)
             {
                 string configPath = GetConfigFilePath();
-                
+
                 if (File.Exists(configPath))
                 {
                     File.Delete(configPath);
                     _cachedConfig = null;
                     return true;
                 }
-                
+
                 return false;
             }
         }
@@ -257,7 +257,7 @@ namespace Voice.Cmdlets.Common
         {
             if (parameterValue != null)
                 return parameterValue;
-            
+
             var config = GetConfig();
             return config.Windows?.Voice;
         }
@@ -269,7 +269,7 @@ namespace Voice.Cmdlets.Common
         {
             if (parameterValue.HasValue)
                 return parameterValue.Value;
-            
+
             var config = GetConfig();
             return config.Common?.Rate ?? defaultValue;
         }
@@ -281,7 +281,7 @@ namespace Voice.Cmdlets.Common
         {
             if (parameterValue.HasValue)
                 return parameterValue.Value;
-            
+
             var config = GetConfig();
             return config.Common?.Volume ?? defaultValue;
         }
@@ -347,7 +347,7 @@ namespace Voice.Cmdlets.Common
         {
             if (parameterValue != null)
                 return parameterValue;
-            
+
             var config = GetConfig();
             return config.Common?.Microphone;
         }

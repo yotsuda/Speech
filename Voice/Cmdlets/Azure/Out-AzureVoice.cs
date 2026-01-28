@@ -29,7 +29,7 @@ namespace Voice.Cmdlets.Azure
             try
             {
                 var config = ConfigManager.GetConfig();
-                
+
                 var voice = Voice ?? config.Azure?.Voice ?? "en-US-JennyNeural";
                 var rate = Rate ?? config.Common?.Rate ?? 1.0;
                 var volume = Volume ?? config.Common?.Volume ?? 100;
@@ -37,7 +37,7 @@ namespace Voice.Cmdlets.Azure
 
                 var task = SynthesizeSpeechAsync(voice, rate, volume, pitch);
                 task.GetAwaiter().GetResult();
-                
+
 
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("Invalid audio format") || ex.Message.Contains("empty audio data"))
@@ -47,9 +47,9 @@ namespace Voice.Cmdlets.Azure
                 var voice = Voice ?? config.Azure?.Voice ?? "en-US-JennyNeural";
                 var textLanguage = DetectTextLanguage(Text);
                 var voiceLanguage = ExtractVoiceLanguage(voice);
-                
+
                 string errorMessage = ex.Message;
-                
+
                 // Add language mismatch hint if detected
                 if (textLanguage != null && voiceLanguage != null && textLanguage != voiceLanguage)
                 {
@@ -59,7 +59,7 @@ namespace Voice.Cmdlets.Azure
                         $"   Voice language: {voiceLanguage} ({voice})" + System.Environment.NewLine +
                         $"   Try using a {textLanguage} voice for this text.";
                 }
-                
+
                 WriteError(new ErrorRecord(
                     new InvalidOperationException(errorMessage, ex),
                     "AzureSpeechAudioError",
@@ -106,11 +106,11 @@ namespace Voice.Cmdlets.Azure
                     lang = $"{parts[0]}-{parts[1]}";
                 }
             }
-            
+
             int ratePercent = (int)Math.Round((rate - 1.0) * 100);
             var rateStr = ratePercent >= 0 ? $"+{ratePercent}%" : $"{ratePercent}%";
             var volumeStr = $"{volume}%";
-            
+
             var prosodyAttrs = $"rate=\"{rateStr}\" volume=\"{volumeStr}\"";
             if (pitch != 0)
             {

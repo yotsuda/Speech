@@ -20,7 +20,7 @@ namespace Voice.Core
         public async Task PlayAsync(CancellationToken cancellationToken)
         {
             using var synthesizer = new SpeechSynthesizer();
-            
+
             if (!string.IsNullOrEmpty(Voice))
             {
                 try
@@ -32,26 +32,26 @@ namespace Voice.Core
                     // 音声が見つからない場合はデフォルト使用
                 }
             }
-            
+
             synthesizer.Rate = Rate;
             synthesizer.Volume = Volume;
-            
+
             using var memoryStream = new MemoryStream();
             synthesizer.SetOutputToWaveStream(memoryStream);
             synthesizer.Speak(Text);
-            
+
             memoryStream.Position = 0;
             await PlayAudioAsync(memoryStream, cancellationToken);
         }
-        
+
         private async Task PlayAudioAsync(Stream audioStream, CancellationToken cancellationToken)
         {
             using var reader = new WaveFileReader(audioStream);
             using var waveOut = new WaveOutEvent();
-            
+
             waveOut.Init(reader);
             waveOut.Play();
-            
+
             while (waveOut.PlaybackState == PlaybackState.Playing)
             {
                 cancellationToken.ThrowIfCancellationRequested();

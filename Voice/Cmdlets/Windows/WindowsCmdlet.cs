@@ -29,7 +29,7 @@ namespace Voice.Cmdlets.Windows
         protected override void BeginProcessing()
         {
             base.BeginProcessing();
-            
+
             if (!ValidateWindowsPlatform())
             {
                 // Stop pipeline execution if not on Windows

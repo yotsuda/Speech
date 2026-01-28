@@ -29,14 +29,14 @@ namespace Voice.Cmdlets.Windows
         internal class VoiceCompleter : IArgumentCompleter
         {
             public IEnumerable<CompletionResult> CompleteArgument(
-                string commandName, 
-                string parameterName, 
-                string wordToComplete, 
-                CommandAst commandAst, 
+                string commandName,
+                string parameterName,
+                string wordToComplete,
+                CommandAst commandAst,
                 IDictionary fakeBoundParameters)
             {
                 var results = new List<CompletionResult>();
-                
+
                 try
                 {
                     var synthesizer = WindowsAudioManager.GetSynthesizer();
@@ -47,15 +47,15 @@ namespace Voice.Cmdlets.Windows
                         foreach (var voice in voices.Where(v => v.Enabled))
                         {
                             var voiceName = voice.VoiceInfo.Name;
-                            
-                            if (string.IsNullOrEmpty(wordToComplete) || 
+
+                            if (string.IsNullOrEmpty(wordToComplete) ||
                                 voiceName.StartsWith(wordToComplete, StringComparison.OrdinalIgnoreCase))
                             {
                                 var tooltip = $"{voiceName}  Culture:{voice.VoiceInfo.Culture.Name}  Gender:{voice.VoiceInfo.Gender}  Age:{voice.VoiceInfo.Age}";
                                 results.Add(new CompletionResult(
-                                    $"'{voiceName}'", 
-                                    voiceName, 
-                                    CompletionResultType.ParameterValue, 
+                                    $"'{voiceName}'",
+                                    voiceName,
+                                    CompletionResultType.ParameterValue,
                                     tooltip));
                             }
                         }
@@ -64,7 +64,7 @@ namespace Voice.Cmdlets.Windows
                 catch
                 {
                 }
-                
+
                 return results;
             }
         }
@@ -80,7 +80,7 @@ namespace Voice.Cmdlets.Windows
             try
             {
                 var synthesizer = WindowsAudioManager.GetSynthesizer();
-                
+
                 // Get values from parameters or config (ConfigManager handles everything)
                 var voice = ConfigManager.GetWindowsVoice(Voice);
                 var rate = ConfigManager.GetRate(Rate);

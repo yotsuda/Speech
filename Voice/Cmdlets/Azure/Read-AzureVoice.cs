@@ -67,17 +67,17 @@ namespace Voice.Cmdlets.Azure
             // Ensure UTF-8 output for spinner characters
             Console.OutputEncoding = Encoding.UTF8;
             Console.CursorVisible = false;
-            
+
             var config = SpeechConfig.FromSubscription(Key!, Region);
             config.SpeechRecognitionLanguage = Language;
-            
-            config.SetProperty(PropertyId.SpeechServiceConnection_InitialSilenceTimeoutMs, 
+
+            config.SetProperty(PropertyId.SpeechServiceConnection_InitialSilenceTimeoutMs,
                 (InitialTimeoutSeconds * 1000).ToString());
 
             // Resolve microphone from parameter or config
             var microphoneName = ConfigManager.GetMicrophone(Microphone);
             AudioConfig audioConfig;
-            
+
             if (!string.IsNullOrEmpty(microphoneName))
             {
                 var micIndex = MicrophoneCompleter.FindMicrophoneIndex(microphoneName);

@@ -24,7 +24,7 @@ namespace Voice.Cmdlets.Common
                 var result = new PSObject();
                 result.Properties.Add(new PSNoteProperty("WasPlaying", wasPlaying));
                 result.Properties.Add(new PSNoteProperty("QueueSizeCleared", queueSizeBefore));
-                
+
                 WriteObject(result);
             }
         }

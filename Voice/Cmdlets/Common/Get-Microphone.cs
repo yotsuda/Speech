@@ -22,7 +22,7 @@ namespace Voice.Cmdlets.Common
             for (int i = 0; i < deviceCount; i++)
             {
                 var capabilities = WaveInEvent.GetCapabilities(i);
-                
+
                 var info = new MicrophoneInfo
                 {
                     Index = i,

@@ -79,12 +79,12 @@ namespace Voice.Cmdlets.Common
                         string bar = new string('\u2588', Math.Min(barLength, 50)); // █
                         string barPadding = new string(' ', 50 - bar.Length);
                         string line = $"  Level: [{bar}{barPadding}] {level,5:F1}";
-                        
+
                         // Clear any leftover characters
-                        string clearPadding = lastLineLength > line.Length 
-                            ? new string(' ', lastLineLength - line.Length) 
+                        string clearPadding = lastLineLength > line.Length
+                            ? new string(' ', lastLineLength - line.Length)
                             : "";
-                        
+
                         Console.Write($"\r{line}{clearPadding}");
                         lastLineLength = line.Length;
                     }
@@ -95,14 +95,14 @@ namespace Voice.Cmdlets.Common
                     // Display test results
                     Console.WriteLine("=== Microphone Test Results ===");
                     Console.WriteLine($"Audio detected: {(audioDetected ? "\u2705 Yes" : "\u274C No")}");
-                    
+
                     if (audioDetected)
                     {
                         Console.WriteLine($"Max level: {maxLevel:F1}");
                         Console.WriteLine($"Avg level: {avgLevel:F1}");
                         Console.WriteLine($"Sample count: {levelCount}");
                         Console.WriteLine();
-                        
+
                         if (maxLevel > 30)
                         {
                             Console.WriteLine("\u2705 Microphone is working properly.");

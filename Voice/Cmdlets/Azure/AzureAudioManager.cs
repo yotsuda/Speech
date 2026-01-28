@@ -10,7 +10,7 @@ namespace Voice.Cmdlets.Azure
     {
         private static AzureAudioManager _instance;
         private static readonly object _lock = new object();
-        
+
         private readonly string _key;
         private readonly string _region;
         private readonly HttpClient _httpClient;
@@ -97,14 +97,14 @@ namespace Voice.Cmdlets.Azure
         public async Task<List<AzureVoiceInfo>> GetAvailableVoicesAsync()
         {
             var endpoint = $"https://{_region}.tts.speech.microsoft.com/cognitiveservices/voices/list";
-            
+
             var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
             request.Headers.Add("Ocp-Apim-Subscription-Key", _key);
 
 
 
             var response = await _httpClient.SendAsync(request);
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
@@ -112,9 +112,9 @@ namespace Voice.Cmdlets.Azure
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            var voices = JsonSerializer.Deserialize<List<AzureVoiceInfo>>(json, new JsonSerializerOptions 
-            { 
-                PropertyNameCaseInsensitive = true 
+            var voices = JsonSerializer.Deserialize<List<AzureVoiceInfo>>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
             });
 
             return voices ?? new List<AzureVoiceInfo>();

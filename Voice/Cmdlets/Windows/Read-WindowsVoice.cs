@@ -58,10 +58,10 @@ namespace Voice.Cmdlets.Windows
         protected override void ProcessRecord()
         {
             using var recognizer = new SpeechRecognitionEngine(new System.Globalization.CultureInfo(Language));
-            
+
             // Resolve microphone from parameter or config
             var microphoneName = ConfigManager.GetMicrophone(Microphone);
-            
+
             if (!string.IsNullOrEmpty(microphoneName))
             {
                 var micIndex = MicrophoneCompleter.FindMicrophoneIndex(microphoneName);
@@ -87,7 +87,7 @@ namespace Voice.Cmdlets.Windows
             {
                 recognizer.SetInputToDefaultAudioDevice();
             }
-            
+
             recognizer.LoadGrammar(new DictationGrammar());
 
             // Event handlers
@@ -346,7 +346,7 @@ namespace Voice.Cmdlets.Windows
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (_completed) return;
-            
+
             var chunk = new byte[count];
             Array.Copy(buffer, offset, chunk, 0, count);
             _chunks.Add(chunk);

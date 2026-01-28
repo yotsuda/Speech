@@ -12,7 +12,7 @@ namespace Voice.Cmdlets.Windows
     {
         private static SpeechSynthesizer? _synthesizer;
         private static readonly object _synthesizerLock = new();
-        
+
         private static SpeechRecognitionEngine? _recognizer;
         private static readonly object _recognizerLock = new();
         private static string? _currentRecognizerCulture;
@@ -49,7 +49,7 @@ namespace Voice.Cmdlets.Windows
                     {
                         // Dispose previous recognizer if culture changed
                         _recognizer?.Dispose();
-                        
+
                         var cultureInfo = new CultureInfo(culture);
                         _recognizer = new SpeechRecognitionEngine(cultureInfo);
                         _recognizer.LoadGrammar(new DictationGrammar());
@@ -80,7 +80,7 @@ namespace Voice.Cmdlets.Windows
                 _synthesizer?.Dispose();
                 _synthesizer = null;
             }
-            
+
             lock (_recognizerLock)
             {
                 _recognizer?.Dispose();

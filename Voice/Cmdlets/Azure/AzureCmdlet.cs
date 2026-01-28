@@ -21,24 +21,24 @@ namespace Voice.Cmdlets.Azure
         protected override void BeginProcessing()
         {
             base.BeginProcessing();
-            
+
             // Check which parameters were explicitly specified
             _keySpecified = MyInvocation.BoundParameters.ContainsKey(nameof(Key));
             _regionSpecified = MyInvocation.BoundParameters.ContainsKey(nameof(Region));
-            
+
             // Load from config if not specified
             var config = ConfigManager.GetConfig();
-            
+
             if (!_keySpecified && config.Azure?.Key != null)
             {
                 Key = config.Azure.Key;
             }
-            
+
             if (!_regionSpecified && config.Azure?.Region != null)
             {
                 Region = config.Azure.Region;
             }
-            
+
             // Validate credentials
             ValidateAzureCredentials();
         }

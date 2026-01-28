@@ -14,7 +14,7 @@ namespace Voice.Cmdlets.Azure
             {
                 var task = GetVoicesAsync();
                 var voices = task.GetAwaiter().GetResult();
-                
+
                 foreach (var voice in voices)
                 {
                     WriteObject(voice);
