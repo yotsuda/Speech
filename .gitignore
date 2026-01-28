@@ -14,10 +14,6 @@ obj/
 .DS_Store
 Thumbs.db
 
-# PowerShell
-*.ps1xml
-!Voice/Voice.Format.ps1xml
-
 # Temporary files
 *.backup
 *.bak
@@ -30,7 +26,4 @@ json_example.json
 # Development files
 IMPLEMENTATION*.md
 Test-*.ps1
-
-# Staging folder
-Staging/
 debug-*.ps1

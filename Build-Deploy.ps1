@@ -31,7 +31,8 @@ $ErrorActionPreference = 'Stop'
 
 $ProjectRoot = $PSScriptRoot
 $ProjectFile = Join-Path $ProjectRoot 'Voice\Voice.csproj'
-$PublishDir = Join-Path $ProjectRoot 'Staging'
+$BuildDir = Join-Path $ProjectRoot 'Voice\bin\Release\net9.0'
+$StagingDir = Join-Path $ProjectRoot 'Staging'
 $DeployDir = 'C:\Program Files\PowerShell\7\Modules\Voice'
 
 # =============================================================================
@@ -41,20 +42,20 @@ if (-not $DeployOnly) {
     Write-Host '========================================' -ForegroundColor Cyan
     Write-Host ' Building Voice module...' -ForegroundColor Cyan
     Write-Host '========================================' -ForegroundColor Cyan
-    
-    dotnet publish $ProjectFile -c Release -o $PublishDir
-    
+
+    dotnet publish $ProjectFile -c Release -o $BuildDir
+
     if ($LASTEXITCODE -ne 0) {
         Write-Error 'Build failed.'
         exit 1
     }
-    
+
     Write-Host 'Build succeeded.' -ForegroundColor Green
     Write-Host ''
 }
 
 if ($BuildOnly) {
-    Write-Host "Output: $PublishDir"
+    Write-Host "Output: $BuildDir"
     exit 0
 }
 
@@ -65,9 +66,9 @@ Write-Host '========================================' -ForegroundColor Cyan
 Write-Host ' Deploying Voice module...' -ForegroundColor Cyan
 Write-Host '========================================' -ForegroundColor Cyan
 
-# Check if publish directory exists
-if (-not (Test-Path $PublishDir)) {
-    Write-Error "Publish directory not found: $PublishDir. Run build first."
+# Check if build directory exists
+if (-not (Test-Path $BuildDir)) {
+    Write-Error "Build directory not found: $BuildDir. Run build first."
     exit 1
 }
 
@@ -80,12 +81,9 @@ if (Test-Path $DeployDir) {
 # Create deployment directory
 New-Item -ItemType Directory -Path $DeployDir -Force | Out-Null
 
-# Files to copy (root level)
-$rootFiles = @(
+# DLL files to copy from BuildDir
+$dllFiles = @(
     'Voice.dll',
-    'Voice.psd1',
-    'Voice.psm1',
-    'Voice.Format.ps1xml',
     'Voice.deps.json',
     'Microsoft.CognitiveServices.Speech.csharp.dll',
     'NAudio.dll',
@@ -102,17 +100,35 @@ $rootFiles = @(
     'Newtonsoft.Json.dll'
 )
 
-Write-Host 'Copying module files...'
-foreach ($file in $rootFiles) {
-    $src = Join-Path $PublishDir $file
+# Module definition files to copy from StagingDir
+$moduleFiles = @(
+    'Voice.psd1',
+    'Voice.psm1',
+    'Voice.Format.ps1xml'
+)
+
+Write-Host 'Copying DLL files from build output...'
+foreach ($file in $dllFiles) {
+    $src = Join-Path $BuildDir $file
     if (Test-Path $src) {
         Copy-Item $src -Destination $DeployDir
         Write-Host "  $file" -ForegroundColor Gray
     }
 }
 
+Write-Host 'Copying module definition files from Staging...'
+foreach ($file in $moduleFiles) {
+    $src = Join-Path $StagingDir $file
+    if (Test-Path $src) {
+        Copy-Item $src -Destination $DeployDir
+        Write-Host "  $file" -ForegroundColor Gray
+    } else {
+        Write-Warning "Module file not found: $src"
+    }
+}
+
 # Copy win-x64 native runtimes (required for Azure Speech SDK)
-$nativeSource = Join-Path $PublishDir 'runtimes\win-x64\native'
+$nativeSource = Join-Path $BuildDir 'runtimes\win-x64\native'
 $nativeDest = Join-Path $DeployDir 'runtimes\win-x64\native'
 
 if (Test-Path $nativeSource) {
@@ -122,7 +138,7 @@ if (Test-Path $nativeSource) {
     Get-ChildItem $nativeDest -File | ForEach-Object {
         Write-Host "  runtimes\win-x64\native\$($_.Name)" -ForegroundColor Gray
     }
-    
+
     # Also copy Azure Speech SDK native DLLs to module root (required for proper loading)
     Write-Host 'Copying Azure Speech SDK native DLLs to module root...'
     Get-ChildItem "$nativeSource\Microsoft.CognitiveServices.Speech.*" -ErrorAction SilentlyContinue | ForEach-Object {
