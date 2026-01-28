@@ -88,9 +88,15 @@ namespace Voice.Cmdlets.Azure
                     WriteWarning($"Microphone '{microphoneName}' not found. Using default microphone.");
                     audioConfig = AudioConfig.FromDefaultMicrophoneInput();
                 }
+                else if (micIndex == 0)
+                {
+                    // Default microphone - use direct API for better performance
+                    audioConfig = AudioConfig.FromDefaultMicrophoneInput();
+                    WriteVerbose($"Using default microphone: {microphoneName}");
+                }
                 else
                 {
-                    // Use NAudio to capture from specific microphone and pipe to Azure
+                    // Non-default microphone - use NAudio stream
                     audioConfig = CreateAudioConfigFromMicrophone(micIndex.Value);
                     WriteVerbose($"Using microphone: {microphoneName}");
                 }

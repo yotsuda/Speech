@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Management.Automation;
+using System.Speech.AudioFormat;
 using System.Speech.Recognition;
 using System.Text;
 using System.Threading;
+using System.Collections.Concurrent;
+using NAudio.Wave;
 using Voice.Cmdlets.Common;
 
 namespace Voice.Cmdlets.Windows
@@ -37,6 +41,10 @@ namespace Voice.Cmdlets.Windows
         [Parameter]
         public SwitchParameter PassThru { get; set; }
 
+        [Parameter]
+        [ArgumentCompleter(typeof(MicrophoneCompleter))]
+        public string? Microphone { get; set; }
+
         private readonly List<RecognitionResult> _results = new();
         private readonly object _lock = new();
         private bool _stopRequested = false;
@@ -44,11 +52,42 @@ namespace Voice.Cmdlets.Windows
         private bool _hasRecognizedSpeech = false;
         private string _currentHypothesis = "";
         private int _lastDisplayLength = 0;
+        private WaveInEvent? _waveIn;
+        private AudioPipeStream? _audioStream;
 
         protected override void ProcessRecord()
         {
             using var recognizer = new SpeechRecognitionEngine(new System.Globalization.CultureInfo(Language));
-            recognizer.SetInputToDefaultAudioDevice();
+            
+            // Resolve microphone from parameter or config
+            var microphoneName = ConfigManager.GetMicrophone(Microphone);
+            
+            if (!string.IsNullOrEmpty(microphoneName))
+            {
+                var micIndex = MicrophoneCompleter.FindMicrophoneIndex(microphoneName);
+                if (micIndex == null)
+                {
+                    WriteWarning($"Microphone '{microphoneName}' not found. Using default microphone.");
+                    recognizer.SetInputToDefaultAudioDevice();
+                }
+                else if (micIndex == 0)
+                {
+                    // Default microphone - use direct API for better performance
+                    recognizer.SetInputToDefaultAudioDevice();
+                    WriteVerbose($"Using default microphone: {microphoneName}");
+                }
+                else
+                {
+                    // Non-default microphone - use NAudio stream
+                    SetupMicrophoneInput(recognizer, micIndex.Value);
+                    WriteVerbose($"Using microphone: {microphoneName}");
+                }
+            }
+            else
+            {
+                recognizer.SetInputToDefaultAudioDevice();
+            }
+            
             recognizer.LoadGrammar(new DictationGrammar());
 
             // Event handlers
@@ -115,6 +154,7 @@ namespace Voice.Cmdlets.Windows
             }
 
             recognizer.RecognizeAsyncCancel();
+            StopMicrophoneCapture();
 
             // Clear current line and move to new line
             ClearCurrentLine();
@@ -245,5 +285,126 @@ namespace Voice.Cmdlets.Windows
             public double Duration { get; set; }
             public DateTime Timestamp { get; set; }
         }
+
+        private void SetupMicrophoneInput(SpeechRecognitionEngine recognizer, int deviceIndex)
+        {
+            // Create pipe stream for producer-consumer pattern
+            _audioStream = new AudioPipeStream();
+
+            // Create NAudio WaveIn for specific microphone
+            // Windows Speech API expects 16kHz, 16-bit, mono
+            _waveIn = new WaveInEvent
+            {
+                DeviceNumber = deviceIndex,
+                WaveFormat = new WaveFormat(16000, 16, 1)
+            };
+
+            _waveIn.DataAvailable += (sender, e) =>
+            {
+                if (e.BytesRecorded > 0)
+                {
+                    _audioStream.Write(e.Buffer, 0, e.BytesRecorded);
+                }
+            };
+
+            _waveIn.StartRecording();
+
+            // Set up audio format for Windows Speech API
+            var audioFormat = new SpeechAudioFormatInfo(16000, AudioBitsPerSample.Sixteen, AudioChannel.Mono);
+            recognizer.SetInputToAudioStream(_audioStream, audioFormat);
+        }
+
+        private void StopMicrophoneCapture()
+        {
+            _waveIn?.StopRecording();
+            _waveIn?.Dispose();
+            _waveIn = null;
+            _audioStream?.Complete();
+            _audioStream = null;
+        }
+    }
+
+    /// <summary>
+    /// A stream that supports concurrent reading and writing for audio piping.
+    /// Producer (NAudio) writes audio data, Consumer (SpeechRecognitionEngine) reads it.
+    /// </summary>
+    internal class AudioPipeStream : Stream
+    {
+        private readonly BlockingCollection<byte[]> _chunks = new();
+        private byte[] _currentChunk = Array.Empty<byte>();
+        private int _currentChunkOffset = 0;
+        private bool _completed = false;
+
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => true;
+        public override long Length => long.MaxValue;  // Infinite stream
+        private long _position = 0;
+        public override long Position
+        {
+            get => _position;
+            set { }  // Ignore seeks
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            if (_completed) return;
+            
+            var chunk = new byte[count];
+            Array.Copy(buffer, offset, chunk, 0, count);
+            _chunks.Add(chunk);
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            int bytesRead = 0;
+
+            while (bytesRead < count)
+            {
+                // Need more data from current chunk
+                if (_currentChunkOffset >= _currentChunk.Length)
+                {
+                    // Try to get next chunk
+                    if (_completed && _chunks.Count == 0)
+                        break;
+
+                    try
+                    {
+                        if (!_chunks.TryTake(out var chunk, 100))
+                        {
+                            if (_completed)
+                                break;
+                            continue;
+                        }
+                        _currentChunk = chunk;
+                        _currentChunkOffset = 0;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        break;
+                    }
+                }
+
+                // Copy from current chunk
+                int available = _currentChunk.Length - _currentChunkOffset;
+                int toCopy = Math.Min(available, count - bytesRead);
+                Array.Copy(_currentChunk, _currentChunkOffset, buffer, offset + bytesRead, toCopy);
+                _currentChunkOffset += toCopy;
+                bytesRead += toCopy;
+            }
+
+            _position += bytesRead;
+            return bytesRead;
+        }
+
+        public void Complete()
+        {
+            _completed = true;
+            _chunks.CompleteAdding();
+        }
+
+        public override void Flush() { }
+        public override long Seek(long offset, SeekOrigin origin) => _position;  // Ignore seeks, return current position
+        public override void SetLength(long value) => throw new NotSupportedException();
     }
 }
