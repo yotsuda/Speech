@@ -52,6 +52,8 @@ namespace Voice.Cmdlets.Windows
         private bool _hasRecognizedSpeech = false;
         private string _currentHypothesis = "";
         private int _lastDisplayLength = 0;
+        private int _spinnerIndex = 0;
+        private static readonly string[] _spinnerFrames = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" };
         private WaveInEvent? _waveIn;
         private AudioPipeStream? _audioStream;
 
@@ -104,14 +106,18 @@ namespace Voice.Cmdlets.Windows
                 Console.WriteLine($"Press Enter to confirm, or wait {EndSilenceSeconds} seconds of silence for auto-confirm...");
             }
             Console.WriteLine();
-            Console.Write("> ");
+
+            // Ensure UTF-8 output for spinner
+            var originalEncoding = Console.OutputEncoding;
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.CursorVisible = false;
 
             recognizer.RecognizeAsync(RecognizeMode.Multiple);
 
             var startTime = DateTime.Now;
             _lastActivityTime = startTime;
 
-            // Monitor loop
+            // Monitor loop with spinner
             while (!_stopRequested)
             {
                 // Check for Enter key
@@ -150,7 +156,15 @@ namespace Voice.Cmdlets.Windows
                     }
                 }
 
-                Thread.Sleep(50);
+                // Display spinner
+                string hypothesis;
+                lock (_lock)
+                {
+                    hypothesis = _currentHypothesis;
+                }
+                DisplaySpinner(hypothesis);
+
+                Thread.Sleep(80);
             }
 
             recognizer.RecognizeAsyncCancel();
@@ -159,6 +173,8 @@ namespace Voice.Cmdlets.Windows
             // Clear current line and move to new line
             ClearCurrentLine();
             Console.WriteLine();
+            Console.CursorVisible = true;
+            Console.OutputEncoding = originalEncoding;
 
             OutputResults();
         }
@@ -173,8 +189,6 @@ namespace Voice.Cmdlets.Windows
                     _lastActivityTime = DateTime.Now;
                     _hasRecognizedSpeech = true;
                 }
-
-                DisplayHypothesis(e.Result.Text);
             }
         }
 
@@ -212,9 +226,20 @@ namespace Voice.Cmdlets.Windows
             DisplayFinal(text);
         }
 
-        private void DisplayHypothesis(string text)
+        private void DisplaySpinner(string text)
         {
-            var display = $"> {text}";
+            var spinner = _spinnerFrames[_spinnerIndex];
+            _spinnerIndex = (_spinnerIndex + 1) % _spinnerFrames.Length;
+
+            string display;
+            if (string.IsNullOrEmpty(text))
+            {
+                display = $"> {spinner}";
+            }
+            else
+            {
+                display = $"> {text} {spinner}";
+            }
             var padding = _lastDisplayLength > display.Length 
                 ? new string(' ', _lastDisplayLength - display.Length) 
                 : "";
