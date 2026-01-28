@@ -47,13 +47,11 @@ namespace Voice.Cmdlets.Windows
 
         private readonly List<RecognitionResult> _results = new();
         private readonly object _lock = new();
+        private readonly SpinnerDisplay _spinner = new();
         private bool _stopRequested = false;
         private DateTime _lastActivityTime = DateTime.MinValue;
         private bool _hasRecognizedSpeech = false;
         private string _currentHypothesis = "";
-        private int _lastDisplayLength = 0;
-        private int _spinnerIndex = 0;
-        private static readonly string[] _spinnerFrames = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" };
         private WaveInEvent? _waveIn;
         private AudioPipeStream? _audioStream;
 
@@ -162,7 +160,7 @@ namespace Voice.Cmdlets.Windows
                 {
                     hypothesis = _currentHypothesis;
                 }
-                DisplaySpinner(hypothesis);
+                _spinner.DisplaySpinner(hypothesis);
 
                 Thread.Sleep(80);
             }
@@ -171,7 +169,7 @@ namespace Voice.Cmdlets.Windows
             StopMicrophoneCapture();
 
             // Clear current line and move to new line
-            ClearCurrentLine();
+            _spinner.ClearCurrentLine();
             Console.WriteLine();
             Console.CursorVisible = true;
             Console.OutputEncoding = originalEncoding;
@@ -223,49 +221,7 @@ namespace Voice.Cmdlets.Windows
                 _hasRecognizedSpeech = true;
             }
 
-            DisplayFinal(text);
-        }
-
-        private void DisplaySpinner(string text)
-        {
-            var spinner = _spinnerFrames[_spinnerIndex];
-            _spinnerIndex = (_spinnerIndex + 1) % _spinnerFrames.Length;
-
-            string display;
-            if (string.IsNullOrEmpty(text))
-            {
-                display = $"> {spinner}";
-            }
-            else
-            {
-                display = $"> {text} {spinner}";
-            }
-            var padding = _lastDisplayLength > display.Length 
-                ? new string(' ', _lastDisplayLength - display.Length) 
-                : "";
-            
-            Console.Write($"\r{display}{padding}");
-            _lastDisplayLength = display.Length;
-        }
-
-        private void DisplayFinal(string text)
-        {
-            var display = $"> {text}";
-            var padding = _lastDisplayLength > display.Length 
-                ? new string(' ', _lastDisplayLength - display.Length) 
-                : "";
-            
-            Console.WriteLine($"\r{display}{padding}");
-            Console.Write("> ");
-            _lastDisplayLength = 2;
-        }
-
-        private void ClearCurrentLine()
-        {
-            if (_lastDisplayLength > 0)
-            {
-                Console.Write($"\r{new string(' ', _lastDisplayLength)}\r");
-            }
+            _spinner.DisplayFinal(text, showNextPrompt: true);
         }
 
         private void OutputResults()

@@ -42,13 +42,11 @@ namespace Voice.Cmdlets.Azure
 
         private readonly List<RecognitionResult> _results = new();
         private readonly object _lock = new();
+        private readonly SpinnerDisplay _spinner = new();
         private bool _stopRequested = false;
         private DateTime _lastActivityTime = DateTime.MinValue;
         private bool _hasRecognizedSpeech = false;
         private string _currentHypothesis = "";
-        private int _lastDisplayLength = 0;
-        private int _spinnerIndex = 0;
-        private static readonly string[] _spinnerFrames = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" };
 
         protected override void ProcessRecord()
         {
@@ -170,14 +168,13 @@ namespace Voice.Cmdlets.Azure
                     }
                 }
 
-// Update spinner display - always show spinner while recognizing
-                _spinnerIndex++;
+                // Update spinner display
                 string hypothesis;
                 lock (_lock)
                 {
                     hypothesis = _currentHypothesis;
                 }
-                DisplaySpinner(hypothesis);
+                _spinner.DisplaySpinner(hypothesis);
 
                 Thread.Sleep(80);
             }
@@ -186,7 +183,7 @@ namespace Voice.Cmdlets.Azure
             StopMicrophoneCapture();
 
             // Clear current line and move to new line
-            ClearCurrentLine();
+            _spinner.ClearCurrentLine();
             Console.WriteLine();
             Console.CursorVisible = true;
 
@@ -227,7 +224,7 @@ namespace Voice.Cmdlets.Azure
                 }
 
                 // Finalize current line and start new line
-                DisplayFinal(e.Result.Text);
+                _spinner.DisplayFinal(e.Result.Text);
             }
         }
 
@@ -239,47 +236,6 @@ namespace Voice.Cmdlets.Azure
                 Console.WriteLine($"Recognition error: {e.ErrorCode} - {e.ErrorDetails}");
             }
             _stopRequested = true;
-        }
-
-private void DisplaySpinner(string text)
-        {
-            // Move cursor to beginning of line and overwrite with spinner at end
-            var spinner = _spinnerFrames[_spinnerIndex % _spinnerFrames.Length];
-            string display;
-            if (string.IsNullOrEmpty(text))
-            {
-                display = $"> {spinner}";
-            }
-            else
-            {
-                display = $"> {text} {spinner}";
-            }
-            var padding = _lastDisplayLength > display.Length 
-                ? new string(' ', _lastDisplayLength - display.Length) 
-                : "";
-            
-            Console.Write($"\r{display}{padding}");
-            _lastDisplayLength = display.Length;
-        }
-
-private void DisplayFinal(string text)
-        {
-            // Overwrite with final text and move to new line
-            var display = $"> {text}";
-            var padding = _lastDisplayLength > display.Length 
-                ? new string(' ', _lastDisplayLength - display.Length) 
-                : "";
-            
-            Console.WriteLine($"\r{display}{padding}");
-            _lastDisplayLength = 0;
-        }
-
-        private void ClearCurrentLine()
-        {
-            if (_lastDisplayLength > 0)
-            {
-                Console.Write($"\r{new string(' ', _lastDisplayLength)}\r");
-            }
         }
 
         private void OutputResults()
