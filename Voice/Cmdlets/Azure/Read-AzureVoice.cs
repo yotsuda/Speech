@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
+using NAudio.Wave;
+using Voice.Cmdlets.Common;
 
 namespace Voice.Cmdlets.Azure
 {
@@ -33,6 +35,10 @@ namespace Voice.Cmdlets.Azure
 
         [Parameter]
         public SwitchParameter PassThru { get; set; }
+
+        [Parameter]
+        [ArgumentCompleter(typeof(MicrophoneCompleter))]
+        public string? Microphone { get; set; }
 
         private readonly List<RecognitionResult> _results = new();
         private readonly object _lock = new();
@@ -70,7 +76,31 @@ namespace Voice.Cmdlets.Azure
             config.SetProperty(PropertyId.SpeechServiceConnection_InitialSilenceTimeoutMs, 
                 (InitialTimeoutSeconds * 1000).ToString());
 
-            using var audioConfig = AudioConfig.FromDefaultMicrophoneInput();
+            // Resolve microphone from parameter or config
+            var microphoneName = ConfigManager.GetMicrophone(Microphone);
+            AudioConfig audioConfig;
+            
+            if (!string.IsNullOrEmpty(microphoneName))
+            {
+                var micIndex = MicrophoneCompleter.FindMicrophoneIndex(microphoneName);
+                if (micIndex == null)
+                {
+                    WriteWarning($"Microphone '{microphoneName}' not found. Using default microphone.");
+                    audioConfig = AudioConfig.FromDefaultMicrophoneInput();
+                }
+                else
+                {
+                    // Use NAudio to capture from specific microphone and pipe to Azure
+                    audioConfig = CreateAudioConfigFromMicrophone(micIndex.Value);
+                    WriteVerbose($"Using microphone: {microphoneName}");
+                }
+            }
+            else
+            {
+                audioConfig = AudioConfig.FromDefaultMicrophoneInput();
+            }
+
+            using var _ = audioConfig;
             using var recognizer = new SpeechRecognizer(config, audioConfig);
 
             // Event handlers
@@ -147,6 +177,7 @@ namespace Voice.Cmdlets.Azure
             }
 
             await recognizer.StopContinuousRecognitionAsync();
+            StopMicrophoneCapture();
 
             // Clear current line and move to new line
             ClearCurrentLine();
@@ -284,6 +315,47 @@ private void DisplayFinal(string text)
             public string Text { get; set; } = "";
             public double Duration { get; set; }
             public DateTime Timestamp { get; set; }
+        }
+
+        private WaveInEvent? _waveIn;
+        private PushAudioInputStream? _audioInputStream;
+
+        private AudioConfig CreateAudioConfigFromMicrophone(int deviceIndex)
+        {
+            // Create push stream for Azure Speech SDK
+            var format = AudioStreamFormat.GetWaveFormatPCM(16000, 16, 1);
+            _audioInputStream = AudioInputStream.CreatePushStream(format);
+
+            // Create NAudio WaveIn for specific microphone
+            _waveIn = new WaveInEvent
+            {
+                DeviceNumber = deviceIndex,
+                WaveFormat = new WaveFormat(16000, 16, 1)
+            };
+
+            _waveIn.DataAvailable += (sender, e) =>
+            {
+                if (e.BytesRecorded > 0)
+                {
+                    _audioInputStream.Write(e.Buffer, e.BytesRecorded);
+                }
+            };
+
+            _waveIn.RecordingStopped += (sender, e) =>
+            {
+                _audioInputStream?.Close();
+            };
+
+            _waveIn.StartRecording();
+
+            return AudioConfig.FromStreamInput(_audioInputStream);
+        }
+
+        private void StopMicrophoneCapture()
+        {
+            _waveIn?.StopRecording();
+            _waveIn?.Dispose();
+            _waveIn = null;
         }
     }
 }

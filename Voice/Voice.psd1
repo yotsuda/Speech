@@ -24,7 +24,8 @@
         'Set-VoiceConfig',
         'Get-VoiceQueueState',
         'Clear-VoiceQueue',
-        'Test-Microphone'
+        'Test-Microphone',
+        'Get-Microphone'
     )
 
     FunctionsToExport = @()

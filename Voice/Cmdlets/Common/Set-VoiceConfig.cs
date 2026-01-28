@@ -17,6 +17,10 @@ namespace Voice.Cmdlets.Common
         public int? Volume { get; set; }
 
         [Parameter]
+        [ArgumentCompleter(typeof(MicrophoneCompleter))]
+        public string? Microphone { get; set; }
+
+        [Parameter]
         public string? WindowsVoice { get; set; }
 
         [Parameter]
@@ -48,6 +52,13 @@ namespace Voice.Cmdlets.Common
             {
                 ConfigManager.UpdateVolumeIfSpecified(Volume);
                 WriteVerbose($"Volume set to: {Volume}");
+                updated = true;
+            }
+
+            if (!string.IsNullOrEmpty(Microphone))
+            {
+                ConfigManager.UpdateMicrophoneIfSpecified(Microphone);
+                WriteVerbose($"Microphone set to: {Microphone}");
                 updated = true;
             }
 

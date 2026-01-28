@@ -339,6 +339,36 @@ namespace Voice.Cmdlets.Common
             SaveConfig(config);
             return true;
         }
+
+        /// <summary>
+        /// Gets microphone value from parameter or config
+        /// </summary>
+        public static string? GetMicrophone(string? parameterValue)
+        {
+            if (parameterValue != null)
+                return parameterValue;
+            
+            var config = GetConfig();
+            return config.Common?.Microphone;
+        }
+
+        /// <summary>
+        /// Updates microphone setting if parameter was specified
+        /// </summary>
+        public static bool UpdateMicrophoneIfSpecified(string? parameterValue)
+        {
+            if (parameterValue == null)
+                return false;
+
+            var config = GetConfig();
+            if (config.Common?.Microphone == parameterValue)
+                return false;
+
+            config.Common ??= new CommonConfig();
+            config.Common.Microphone = parameterValue;
+            SaveConfig(config);
+            return true;
+        }
         /// <summary>
         /// Updates Azure key setting if parameter was specified
         /// </summary>
@@ -426,6 +456,7 @@ namespace Voice.Cmdlets.Common
     {
         public double? Rate { get; set; }
         public int? Volume { get; set; }
+        public string? Microphone { get; set; }
     }
 
     public class WindowsConfig
