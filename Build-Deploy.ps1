@@ -85,6 +85,7 @@ $rootFiles = @(
     'Voice.dll',
     'Voice.psd1',
     'Voice.psm1',
+    'Voice.Format.ps1xml',
     'Voice.deps.json',
     'Microsoft.CognitiveServices.Speech.csharp.dll',
     'NAudio.dll',
