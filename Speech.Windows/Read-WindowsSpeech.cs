@@ -237,7 +237,7 @@ namespace Speech.Windows
                 _hasRecognizedSpeech = true;
             }
 
-            _spinner.DisplayFinal(text, showNextPrompt: true);
+            _spinner.DisplayFinal(text);
         }
 
         private void OutputResults()
