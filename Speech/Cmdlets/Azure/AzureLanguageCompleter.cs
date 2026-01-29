@@ -27,9 +27,7 @@ namespace Speech.Cmdlets.Azure
                 var config = ConfigManager.GetConfig();
                 if (string.IsNullOrEmpty(config.Azure?.Key) || string.IsNullOrEmpty(config.Azure?.Region))
                 {
-                    results.Add(new CompletionResult(
-                        "Set-SpeechConfig",
-                        "⚠ Run: Set-SpeechConfig -AzureKey <key> -AzureRegion <region>",
+                    results.Add(new CompletionResult("⚠ Run: Set-SpeechConfig -AzureKey <key> -AzureRegion <region>", "⚠ Run: Set-SpeechConfig -AzureKey <key> -AzureRegion <region>",
                         CompletionResultType.Text,
                         "Azure credentials not configured. Run Set-SpeechConfig first."));
                     return results;
@@ -38,9 +36,7 @@ namespace Speech.Cmdlets.Azure
                 var voices = AzureSpeechCompleter.GetCachedVoicesPublic();
                 if (voices == null || voices.Count == 0)
                 {
-                    results.Add(new CompletionResult(
-                        "",
-                        "⚠ Failed to fetch voice list from Azure",
+                    results.Add(new CompletionResult("⚠ Failed to fetch voice list from Azure", "⚠ Failed to fetch voice list from Azure",
                         CompletionResultType.Text,
                         "Could not retrieve voices. Check your Azure credentials."));
                     return results;
