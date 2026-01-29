@@ -84,12 +84,11 @@ namespace Speech.OpenAI
                 var text = manager.SpeechToTextAsync(audioData, "audio.wav", "whisper-1", language)
                     .GetAwaiter().GetResult();
 
+                // Clear the "Transcribing..." line
+                Console.Write("\r" + new string(' ', 50) + "\r");
+
                 if (!string.IsNullOrWhiteSpace(text))
                 {
-                    // Clear line and show result
-                    Console.Write("\r" + new string(' ', 50) + "\r");
-                    Console.WriteLine($"> {text.Trim()}");
-                    Console.WriteLine();
                     WriteObject(text.Trim());
                 }
                 else
