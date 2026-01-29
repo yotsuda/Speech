@@ -23,8 +23,6 @@
         # Utilities
         'Get-SpeechConfig',
         'Set-SpeechConfig',
-        'Get-SpeechQueueState',
-        'Clear-SpeechQueue',
         'Test-Microphone',
         'Get-Microphone'
     )
