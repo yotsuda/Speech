@@ -403,5 +403,15 @@ namespace Voice.Cmdlets.Windows
         public override void Flush() { }
         public override long Seek(long offset, SeekOrigin origin) => _position;  // Ignore seeks, return current position
         public override void SetLength(long value) => throw new NotSupportedException();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Complete();
+                _chunks.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

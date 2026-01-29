@@ -182,7 +182,7 @@ namespace Voice.Cmdlets.Common
         {
             var culture = System.Globalization.CultureInfo.CurrentUICulture;
 
-            // TODO: �n�[�h�R�[�h�����AAPI �Ń��P�[���ɓK���� Voice ���擾���ׂ����B
+            // TODO: Hardcoded for now. Consider fetching locale-appropriate voices via API.
             return culture.TwoLetterISOLanguageName switch
             {
                 "ja" => "ja-JP-NanamiNeural",

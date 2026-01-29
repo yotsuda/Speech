@@ -74,9 +74,5 @@ namespace Voice.Cmdlets.Azure
                     null));
             }
         }
-
     }
 }
-
-
-

@@ -5,6 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Interoperability", "CA1416:プラットフォームの互換性を検証", Justification = "<保留中>", Scope = "member", Target = "~M:Voice.Cmdlets.Windows.GetWindowsVoicesCommand.ProcessRecord")]
-[assembly: SuppressMessage("Interoperability", "CA1416:プラットフォームの互換性を検証", Justification = "<保留中>", Scope = "member", Target = "~M:Voice.Cmdlets.Windows.OutWindowsVoiceCmdlet.VoiceCompleter.CompleteArgument(System.String,System.String,System.String,System.Management.Automation.Language.CommandAst,System.Collections.IDictionary)~System.Collections.Generic.IEnumerable{System.Management.Automation.CompletionResult}")]
-[assembly: SuppressMessage("Interoperability", "CA1416:プラットフォームの互換性を検証", Justification = "<保留中>", Scope = "member", Target = "~M:Voice.Cmdlets.Windows.OutWindowsVoiceCmdlet.ProcessRecord")]
+[assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Windows-only feature with platform check", Scope = "member", Target = "~M:Voice.Cmdlets.Windows.GetWindowsVoiceCmdlet.ProcessRecord")]
+[assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Windows-only feature with platform check", Scope = "member", Target = "~M:Voice.Cmdlets.Windows.OutWindowsVoiceCmdlet.VoiceCompleter.CompleteArgument(System.String,System.String,System.String,System.Management.Automation.Language.CommandAst,System.Collections.IDictionary)~System.Collections.Generic.IEnumerable{System.Management.Automation.CompletionResult}")]
+[assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "Windows-only feature with platform check", Scope = "member", Target = "~M:Voice.Cmdlets.Windows.OutWindowsVoiceCmdlet.ProcessRecord")]

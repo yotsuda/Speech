@@ -61,8 +61,9 @@ namespace Voice.Cmdlets.Windows
                         }
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.WriteLine($"VoiceCompleter error: {ex.Message}");
                 }
 
                 return results;

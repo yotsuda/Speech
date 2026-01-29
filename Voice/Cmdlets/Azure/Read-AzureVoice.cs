@@ -83,7 +83,14 @@ namespace Voice.Cmdlets.Azure
                 var micIndex = MicrophoneCompleter.FindMicrophoneIndex(microphoneName);
                 if (micIndex == null)
                 {
-                    WriteWarning($"Microphone '{microphoneName}' not found. Using default microphone.");
+                    if (!OperatingSystem.IsWindows())
+                    {
+                        WriteWarning("Microphone selection is only supported on Windows. Using default microphone.");
+                    }
+                    else
+                    {
+                        WriteWarning($"Microphone '{microphoneName}' not found. Using default microphone.");
+                    }
                     audioConfig = AudioConfig.FromDefaultMicrophoneInput();
                 }
                 else if (micIndex == 0)
@@ -94,7 +101,7 @@ namespace Voice.Cmdlets.Azure
                 }
                 else
                 {
-                    // Non-default microphone - use NAudio stream
+                    // Non-default microphone - use NAudio stream (Windows only)
                     audioConfig = CreateAudioConfigFromMicrophone(micIndex.Value);
                     WriteVerbose($"Using microphone: {microphoneName}");
                 }

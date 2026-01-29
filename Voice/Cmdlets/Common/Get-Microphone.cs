@@ -17,6 +17,12 @@ namespace Voice.Cmdlets.Common
 
         protected override void ProcessRecord()
         {
+            if (!OperatingSystem.IsWindows())
+            {
+                WriteWarning("Microphone enumeration is only supported on Windows.");
+                return;
+            }
+
             int deviceCount = WaveInEvent.DeviceCount;
 
             for (int i = 0; i < deviceCount; i++)

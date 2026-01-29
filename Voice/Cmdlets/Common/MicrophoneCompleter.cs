@@ -8,7 +8,8 @@ using NAudio.Wave;
 namespace Voice.Cmdlets.Common
 {
     /// <summary>
-    /// Provides argument completion for microphone names
+    /// Provides argument completion for microphone names.
+    /// Note: Microphone selection via NAudio is only supported on Windows.
     /// </summary>
     public class MicrophoneCompleter : IArgumentCompleter
     {
@@ -20,6 +21,10 @@ namespace Voice.Cmdlets.Common
             IDictionary fakeBoundParameters)
         {
             var results = new List<CompletionResult>();
+
+            if (!OperatingSystem.IsWindows())
+                return results;
+
             int deviceCount = WaveInEvent.DeviceCount;
 
             for (int i = 0; i < deviceCount; i++)
@@ -40,11 +45,16 @@ namespace Voice.Cmdlets.Common
         }
 
         /// <summary>
-        /// Gets microphone names for static access
+        /// Gets microphone names for static access.
+        /// Returns empty list on non-Windows platforms.
         /// </summary>
         public static List<string> GetMicrophoneNames()
         {
             var names = new List<string>();
+
+            if (!OperatingSystem.IsWindows())
+                return names;
+
             int deviceCount = WaveInEvent.DeviceCount;
 
             for (int i = 0; i < deviceCount; i++)
@@ -57,11 +67,15 @@ namespace Voice.Cmdlets.Common
         }
 
         /// <summary>
-        /// Finds microphone index by name (partial match)
+        /// Finds microphone index by name (partial match).
+        /// Returns null on non-Windows platforms.
         /// </summary>
         public static int? FindMicrophoneIndex(string name)
         {
             if (string.IsNullOrEmpty(name))
+                return null;
+
+            if (!OperatingSystem.IsWindows())
                 return null;
 
             int deviceCount = WaveInEvent.DeviceCount;
