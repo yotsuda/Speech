@@ -1,5 +1,6 @@
 using System;
 using System.Management.Automation;
+using System.Text;
 
 namespace Speech.Core
 {
@@ -28,49 +29,47 @@ namespace Speech.Core
                 return;
             }
 
-            // Output Common settings
-            if (config.Common != null)
-            {
-                var common = new PSObject();
-                common.TypeNames.Insert(0, "Voice.Config.Common");
-                common.Properties.Add(new PSNoteProperty("Section", "Common"));
-                common.Properties.Add(new PSNoteProperty("Rate", config.Common.Rate));
-                common.Properties.Add(new PSNoteProperty("Volume", config.Common.Volume));
-                common.Properties.Add(new PSNoteProperty("Microphone", config.Common.Microphone));
-                WriteObject(common);
-            }
+            var sb = new StringBuilder();
 
-            // Output Windows settings
-            if (config.Windows != null)
-            {
-                var windows = new PSObject();
-                windows.TypeNames.Insert(0, "Voice.Config.Windows");
-                windows.Properties.Add(new PSNoteProperty("Section", "Windows"));
-                windows.Properties.Add(new PSNoteProperty("Speech", config.Windows.Voice));
-                WriteObject(windows);
-            }
+            // Common settings
+            sb.AppendLine("[Common]");
+            sb.AppendLine($"  Rate       : {config.Common?.Rate?.ToString("F2") ?? "(not set)"}");
+            sb.AppendLine($"  Volume     : {config.Common?.Volume?.ToString() ?? "(not set)"}");
+            sb.AppendLine($"  Language   : {config.Common?.Language ?? "(not set)"}");
+            sb.AppendLine($"  Microphone : {config.Common?.Microphone ?? "(not set)"}");
+            sb.AppendLine();
 
-            // Output Azure settings
-            if (config.Azure != null)
-            {
-                var azure = new PSObject();
-                azure.TypeNames.Insert(0, "Voice.Config.Azure");
-                azure.Properties.Add(new PSNoteProperty("Section", "Azure"));
-                azure.Properties.Add(new PSNoteProperty("Speech", config.Azure.Voice));
-                azure.Properties.Add(new PSNoteProperty("Pitch", config.Azure.Pitch));
-                azure.Properties.Add(new PSNoteProperty("Region", config.Azure.Region));
+            // Windows settings
+            sb.AppendLine("[Windows]");
+            sb.AppendLine($"  Voice      : {config.Windows?.Voice ?? "(not set)"}");
+            sb.AppendLine();
 
-                // Mask API key for security (show only last 4 chars)
-                string? maskedKey = null;
-                if (!string.IsNullOrEmpty(config.Azure.Key))
-                {
-                    maskedKey = config.Azure.Key.Length > 4
-                        ? new string('*', config.Azure.Key.Length - 4) + config.Azure.Key.Substring(config.Azure.Key.Length - 4)
-                        : new string('*', config.Azure.Key.Length);
-                }
-                azure.Properties.Add(new PSNoteProperty("Key", maskedKey));
-                WriteObject(azure);
-            }
+            // Azure settings
+            sb.AppendLine("[Azure]");
+            sb.AppendLine($"  Voice      : {config.Azure?.Voice ?? "(not set)"}");
+            sb.AppendLine($"  Pitch      : {config.Azure?.Pitch?.ToString() ?? "(not set)"}");
+            sb.AppendLine($"  Region     : {config.Azure?.Region ?? "(not set)"}");
+            sb.AppendLine($"  Key        : {MaskKey(config.Azure?.Key)}");
+            sb.AppendLine();
+
+            // OpenAI settings
+            sb.AppendLine("[OpenAI]");
+            sb.AppendLine($"  Voice      : {config.OpenAI?.Voice ?? "(not set)"}");
+            sb.AppendLine($"  Model      : {config.OpenAI?.Model ?? "(not set)"}");
+            sb.AppendLine($"  Key        : {MaskKey(config.OpenAI?.Key)}");
+
+            WriteObject(sb.ToString());
+        }
+
+        private static string MaskKey(string? key)
+        {
+            if (string.IsNullOrEmpty(key))
+                return "(not set)";
+
+            if (key.Length <= 8)
+                return new string('*', key.Length);
+
+            return new string('*', key.Length - 4) + key.Substring(key.Length - 4);
         }
     }
 }
