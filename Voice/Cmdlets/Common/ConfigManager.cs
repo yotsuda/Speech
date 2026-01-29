@@ -369,6 +369,96 @@ namespace Voice.Cmdlets.Common
             SaveConfig(config);
             return true;
         }
+
+        /// <summary>
+        /// Gets language value from parameter or config
+        /// </summary>
+        public static string? GetLanguage(string? parameterValue)
+        {
+            if (parameterValue != null)
+                return parameterValue;
+
+            var config = GetConfig();
+            return config.Common?.Language;
+        }
+
+        /// <summary>
+        /// Updates language setting and clears conflicting Voice settings.
+        /// Returns list of cleared voice settings for warning purposes.
+        /// </summary>
+        public static List<string> UpdateLanguageIfSpecified(string? parameterValue)
+        {
+            var clearedVoices = new List<string>();
+
+            if (parameterValue == null)
+                return clearedVoices;
+
+            var config = GetConfig();
+            var normalizedLanguage = NormalizeLanguage(parameterValue);
+
+            // Check if Azure Voice conflicts with new language
+            if (!string.IsNullOrEmpty(config.Azure?.Voice))
+            {
+                var azureVoiceLanguage = ExtractLanguageFromVoice(config.Azure.Voice);
+                if (azureVoiceLanguage != null &&
+                    !azureVoiceLanguage.StartsWith(normalizedLanguage, StringComparison.OrdinalIgnoreCase))
+                {
+                    clearedVoices.Add($"AzureVoice '{config.Azure.Voice}'");
+                    config.Azure.Voice = null;
+                }
+            }
+
+            // Update language
+            config.Common ??= new CommonConfig();
+            config.Common.Language = parameterValue;
+            SaveConfig(config);
+
+            return clearedVoices;
+        }
+
+        /// <summary>
+        /// Normalizes a language code (e.g., "ja" -> "ja-JP", "en" -> "en-US")
+        /// </summary>
+        public static string NormalizeLanguage(string language)
+        {
+            // If already in full format (e.g., "ja-JP"), return as-is
+            if (language.Contains('-'))
+                return language;
+
+            // Map short codes to full locale codes
+            return language.ToLowerInvariant() switch
+            {
+                "ja" => "ja-JP",
+                "en" => "en-US",
+                "zh" => "zh-CN",
+                "ko" => "ko-KR",
+                "de" => "de-DE",
+                "fr" => "fr-FR",
+                "es" => "es-ES",
+                "it" => "it-IT",
+                "pt" => "pt-BR",
+                "ru" => "ru-RU",
+                _ => $"{language}-{language.ToUpperInvariant()}"  // Guess: "xx" -> "xx-XX"
+            };
+        }
+
+        /// <summary>
+        /// Extracts language code from voice name (e.g., "ja-JP-NanamiNeural" -> "ja-JP")
+        /// </summary>
+        public static string? ExtractLanguageFromVoice(string? voice)
+        {
+            if (string.IsNullOrEmpty(voice))
+                return null;
+
+            var parts = voice.Split('-');
+            if (parts.Length >= 2)
+            {
+                return $"{parts[0]}-{parts[1]}";
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Updates Azure key setting if parameter was specified
         /// </summary>
@@ -457,6 +547,7 @@ namespace Voice.Cmdlets.Common
         public double? Rate { get; set; }
         public int? Volume { get; set; }
         public string? Microphone { get; set; }
+        public string? Language { get; set; }
     }
 
     public class WindowsConfig

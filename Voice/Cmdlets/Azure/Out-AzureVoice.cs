@@ -92,63 +92,34 @@ namespace Voice.Cmdlets.Azure
 
         /// <summary>
         /// Resolves which voice to use based on -Voice, -Language, and config settings.
-        /// Priority: -Voice > -Language (if config voice doesn't match) > config voice > default
+        /// Priority: -Voice > config.Azure.Voice > -Language > config.Common.Language > default
         /// </summary>
         private string ResolveVoice(VoiceConfig config)
         {
-            // If -Voice is explicitly specified, use it
+            // Priority 1: -Voice parameter explicitly specified
             if (!string.IsNullOrEmpty(Voice))
                 return Voice;
 
-            var configVoice = config.Azure?.Voice ?? "en-US-JennyNeural";
+            // Priority 2: config.Azure.Voice is set
+            if (!string.IsNullOrEmpty(config.Azure?.Voice))
+                return config.Azure.Voice;
 
-            // If -Language is not specified, use config voice
-            if (string.IsNullOrEmpty(Language))
-                return configVoice;
-
-            // -Language is specified, check if config voice matches
-            var configVoiceLanguage = ExtractVoiceLanguage(configVoice);
-
-            // Normalize language input (e.g., "ja" -> "ja-JP" for comparison)
-            var normalizedLanguage = NormalizeLanguage(Language);
-
-            if (configVoiceLanguage != null &&
-                configVoiceLanguage.StartsWith(normalizedLanguage, StringComparison.OrdinalIgnoreCase))
+            // Priority 3: -Language parameter specified
+            if (!string.IsNullOrEmpty(Language))
             {
-                // Config voice already matches the requested language
-                return configVoice;
+                var normalizedLanguage = ConfigManager.NormalizeLanguage(Language);
+                return GetDefaultVoiceForLanguage(normalizedLanguage);
             }
 
-            // Config voice doesn't match, select a default voice for the requested language
-            var defaultVoice = GetDefaultVoiceForLanguage(normalizedLanguage);
-            WriteVerbose($"Language '{Language}' specified. Using voice: {defaultVoice}");
-            return defaultVoice;
-        }
-
-        /// <summary>
-        /// Normalizes a language code (e.g., "ja" -> "ja-JP", "en" -> "en-US")
-        /// </summary>
-        private static string NormalizeLanguage(string language)
-        {
-            // If already in full format (e.g., "ja-JP"), return as-is
-            if (language.Contains('-'))
-                return language;
-
-            // Map short codes to full locale codes
-            return language.ToLowerInvariant() switch
+            // Priority 4: config.Common.Language is set
+            if (!string.IsNullOrEmpty(config.Common?.Language))
             {
-                "ja" => "ja-JP",
-                "en" => "en-US",
-                "zh" => "zh-CN",
-                "ko" => "ko-KR",
-                "de" => "de-DE",
-                "fr" => "fr-FR",
-                "es" => "es-ES",
-                "it" => "it-IT",
-                "pt" => "pt-BR",
-                "ru" => "ru-RU",
-                _ => $"{language}-{language.ToUpperInvariant()}"  // Guess: "xx" -> "xx-XX"
-            };
+                var normalizedLanguage = ConfigManager.NormalizeLanguage(config.Common.Language);
+                return GetDefaultVoiceForLanguage(normalizedLanguage);
+            }
+
+            // Priority 5: Fallback to default
+            return "en-US-JennyNeural";
         }
 
         /// <summary>

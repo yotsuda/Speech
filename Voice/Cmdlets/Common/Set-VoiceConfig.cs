@@ -22,11 +22,11 @@ namespace Voice.Cmdlets.Common
         public string? Microphone { get; set; }
 
         [Parameter]
-        public string? WindowsVoice { get; set; }
+        [ArgumentCompleter(typeof(AzureLanguageCompleter))]
+        public string? Language { get; set; }
 
         [Parameter]
-        [ArgumentCompleter(typeof(AzureLanguageCompleter))]
-        public string? AzureLanguage { get; set; }
+        public string? WindowsVoice { get; set; }
 
         [Parameter]
         [ArgumentCompleter(typeof(AzureVoiceCompleter))]
@@ -66,6 +66,19 @@ namespace Voice.Cmdlets.Common
                 ConfigManager.UpdateMicrophoneIfSpecified(Microphone);
                 WriteVerbose($"Microphone set to: {Microphone}");
                 updated = true;
+            }
+
+            if (!string.IsNullOrEmpty(Language))
+            {
+                var clearedVoices = ConfigManager.UpdateLanguageIfSpecified(Language);
+                WriteVerbose($"Language set to: {Language}");
+                updated = true;
+
+                // Warn about cleared conflicting voice settings
+                foreach (var cleared in clearedVoices)
+                {
+                    WriteWarning($"Cleared {cleared} because it conflicts with Language '{Language}'.");
+                }
             }
 
             // Windows settings
@@ -111,7 +124,7 @@ namespace Voice.Cmdlets.Common
             }
             else
             {
-                WriteWarning("No parameters specified. Use -Rate, -Volume, -WindowsVoice, -AzureVoice, -AzurePitch, -AzureKey, or -AzureRegion.");
+                WriteWarning("No parameters specified. Use -Rate, -Volume, -Language, -WindowsVoice, -AzureVoice, -AzurePitch, -AzureKey, or -AzureRegion.");
             }
         }
     }

@@ -34,26 +34,28 @@ namespace Voice.Cmdlets.Azure
                 if (voices == null)
                     return results;
 
-                // Get language filter from bound parameters
-                // Out-AzureVoice uses -Language, Set-VoiceConfig uses -AzureLanguage
+                // Get language filter from bound parameters (-Language)
                 string? languageFilter = null;
                 if (fakeBoundParameters.Contains("Language"))
                 {
                     languageFilter = fakeBoundParameters["Language"]?.ToString();
                 }
-                else if (fakeBoundParameters.Contains("AzureLanguage"))
-                {
-                    languageFilter = fakeBoundParameters["AzureLanguage"]?.ToString();
-                }
 
-                // If no explicit language specified, use the language from config voice
+                // If no explicit language specified, check config
                 if (string.IsNullOrEmpty(languageFilter))
                 {
                     var config = ConfigManager.GetConfig();
+
+                    // Priority 1: Use language from Azure Voice setting
                     var configVoice = config.Azure?.Voice;
                     if (!string.IsNullOrEmpty(configVoice))
                     {
                         languageFilter = ExtractLanguageFromVoice(configVoice);
+                    }
+                    // Priority 2: Use Common Language setting
+                    else if (!string.IsNullOrEmpty(config.Common?.Language))
+                    {
+                        languageFilter = ConfigManager.NormalizeLanguage(config.Common.Language);
                     }
                 }
 
