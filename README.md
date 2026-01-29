@@ -1,4 +1,4 @@
-# Voice
+# Speech
 
 A PowerShell module providing unified voice synthesis (TTS) and recognition (STT) across Windows Speech API and Azure Speech Services.
 
@@ -33,14 +33,14 @@ A PowerShell module providing unified voice synthesis (TTS) and recognition (STT
 
 ```powershell
 # Clone the repository
-git clone https://github.com/yourusername/Voice.git
-cd Voice
+git clone https://github.com/yourusername/Speech.git
+cd Speech
 
 # Build the project
-dotnet build Voice/Voice.csproj -c Release
+dotnet build Speech/Speech.csproj -c Release
 
 # Import the module
-Import-Module .\Voice\bin\Release\net9.0\Voice.psd1
+Import-Module .\Speech\bin\Release\net9.0\Speech.psd1
 ```
 
 ## Quick Start
@@ -49,38 +49,38 @@ Import-Module .\Voice\bin\Release\net9.0\Voice.psd1
 
 ```powershell
 # Windows TTS
-Out-WindowsVoice "Hello, world!"
+Out-WindowsSpeech "Hello, world!"
 
 # Azure TTS with custom voice
-Out-AzureVoice "こんにちは" -Voice "ja-JP-NanamiNeural" -Key $env:AZURE_SPEECH_KEY -Region "japaneast"
+Out-AzureSpeech "こんにちは" -Voice "ja-JP-NanamiNeural" -Key $env:AZURE_SPEECH_KEY -Region "japaneast"
 
 # List available voices
-Get-WindowsVoice
-Get-AzureVoice -Key $env:AZURE_SPEECH_KEY -Region "japaneast"
+Get-WindowsSpeech
+Get-AzureSpeech -Key $env:AZURE_SPEECH_KEY -Region "japaneast"
 ```
 
 ### Speech-to-Text
 
 ```powershell
 # Windows STT (single recognition)
-$text = Read-WindowsVoice
+$text = Read-WindowsSpeech
 
 # Azure STT (continuous recognition, press Enter to stop)
-$text = Read-AzureVoice -Key $env:AZURE_SPEECH_KEY -Region "japaneast"
+$text = Read-AzureSpeech -Key $env:AZURE_SPEECH_KEY -Region "japaneast"
 ```
 
 ### Interactive Conversation Example
 
 ```powershell
 while ($true) {
-    Out-WindowsVoice "How can I help you?"
+    Out-WindowsSpeech "How can I help you?"
     
-    $input = Read-WindowsVoice -TimeoutSeconds 30
+    $input = Read-WindowsSpeech -TimeoutSeconds 30
     
     if (-not $input) { continue }
     
     if ($input -match "exit|quit|goodbye") {
-        Out-WindowsVoice "Goodbye!"
+        Out-WindowsSpeech "Goodbye!"
         break
     }
     
@@ -91,7 +91,7 @@ while ($true) {
 ## Configuration
 
 Configuration is automatically saved to:
-- **Windows**: `Documents\PowerShell\Modules\Voice\VoiceConfig.json`
+- **Windows**: `Documents\PowerShell\Modules\Speech\VoiceConfig.json`
 
 ### Example Configuration
 
@@ -116,38 +116,38 @@ Configuration is automatically saved to:
 
 ```powershell
 # View current configuration
-Get-VoiceConfig
+Get-SpeechConfig
 
 # Update configuration
-Set-VoiceConfig -WindowsVoice "Microsoft David Desktop" -Rate 1.2
+Set-SpeechConfig -WindowsVoice "Microsoft David Desktop" -Rate 1.2
 ```
 
 ## Cmdlet Reference
 
 ### Windows Speech API
 
-#### `Out-WindowsVoice`
+#### `Out-WindowsSpeech`
 Synthesize speech using Windows SAPI.
 
 ```powershell
-Out-WindowsVoice [-Text] <string>
+Out-WindowsSpeech [-Text] <string>
     [-Voice <string>]
     [-Rate <double>]   # 0.5 to 2.0
     [-Volume <int>]    # 0 to 100
 ```
 
-#### `Get-WindowsVoice`
+#### `Get-WindowsSpeech`
 List available Windows voices.
 
 ```powershell
-Get-WindowsVoice
+Get-WindowsSpeech
 ```
 
-#### `Read-WindowsVoice`
+#### `Read-WindowsSpeech`
 Continuous speech recognition using Windows Speech API. Stops automatically after silence, or press Enter to stop immediately.
 
 ```powershell
-Read-WindowsVoice
+Read-WindowsSpeech
     [-InitialTimeoutSeconds <int>]  # Before speech, Default: 30
     [-EndSilenceSeconds <int>]      # After speech, Default: 3
     [-Language <string>]            # Default: "ja-JP"
@@ -158,11 +158,11 @@ Read-WindowsVoice
 
 ### Azure Speech Services
 
-#### `Out-AzureVoice`
+#### `Out-AzureSpeech`
 Synthesize speech using Azure TTS.
 
 ```powershell
-Out-AzureVoice [-Text] <string>
+Out-AzureSpeech [-Text] <string>
     -Key <string>
     -Region <string>
     [-Voice <string>]
@@ -171,21 +171,21 @@ Out-AzureVoice [-Text] <string>
     [-Pitch <int>]     # -50 to 50 Hz
 ```
 
-#### `Get-AzureVoice`
+#### `Get-AzureSpeech`
 List available Azure neural voices.
 
 ```powershell
-Get-AzureVoice
+Get-AzureSpeech
     -Key <string>
     -Region <string>
     [-Locale <string>]  # Filter by locale (e.g., "ja-JP")
 ```
 
-#### `Read-AzureVoice`
+#### `Read-AzureSpeech`
 Continuous speech recognition using Azure Speech Services. Stops automatically after silence, or press Enter to stop immediately.
 
 ```powershell
-Read-AzureVoice
+Read-AzureSpeech
     -Key <string>
     -Region <string>
     [-Language <string>]            # Default: "ja-JP"
@@ -197,18 +197,18 @@ Read-AzureVoice
 
 ### Utilities
 
-#### `Get-VoiceConfig`
+#### `Get-SpeechConfig`
 Display current configuration.
 
 ```powershell
-Get-VoiceConfig
+Get-SpeechConfig
 ```
 
-#### `Set-VoiceConfig`
+#### `Set-SpeechConfig`
 Update configuration settings.
 
 ```powershell
-Set-VoiceConfig
+Set-SpeechConfig
     [-WindowsVoice <string>]
     [-AzureKey <string>]
     [-AzureRegion <string>]
@@ -217,18 +217,18 @@ Set-VoiceConfig
     [-Volume <int>]
 ```
 
-#### `Get-VoiceQueueState`
+#### `Get-SpeechQueueState`
 Get TTS queue status.
 
 ```powershell
-Get-VoiceQueueState
+Get-SpeechQueueState
 ```
 
-#### `Clear-VoiceQueue`
+#### `Clear-SpeechQueue`
 Clear pending TTS queue.
 
 ```powershell
-Clear-VoiceQueue
+Clear-SpeechQueue
 ```
 
 #### `Test-Microphone`
