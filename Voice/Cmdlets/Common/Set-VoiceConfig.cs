@@ -25,6 +25,10 @@ namespace Voice.Cmdlets.Common
         public string? WindowsVoice { get; set; }
 
         [Parameter]
+        [ArgumentCompleter(typeof(AzureLanguageCompleter))]
+        public string? AzureLanguage { get; set; }
+
+        [Parameter]
         [ArgumentCompleter(typeof(AzureVoiceCompleter))]
         public string? AzureVoice { get; set; }
 

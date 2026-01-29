@@ -10,6 +10,7 @@ namespace Voice.Cmdlets.Azure
     /// <summary>
     /// Provides argument completion for Azure voice names.
     /// Caches voice list to avoid repeated API calls.
+    /// Filters by Language/AzureLanguage parameter if specified.
     /// </summary>
     public class AzureVoiceCompleter : IArgumentCompleter
     {
@@ -33,11 +34,31 @@ namespace Voice.Cmdlets.Azure
                 if (voices == null)
                     return results;
 
+                // Get language filter from bound parameters
+                // Out-AzureVoice uses -Language, Set-VoiceConfig uses -AzureLanguage
+                string? languageFilter = null;
+                if (fakeBoundParameters.Contains("Language"))
+                {
+                    languageFilter = fakeBoundParameters["Language"]?.ToString();
+                }
+                else if (fakeBoundParameters.Contains("AzureLanguage"))
+                {
+                    languageFilter = fakeBoundParameters["AzureLanguage"]?.ToString();
+                }
+
                 foreach (var voice in voices)
                 {
                     var shortName = voice.ShortName ?? voice.Name ?? "";
                     if (string.IsNullOrEmpty(shortName))
                         continue;
+
+                    // Filter by language if specified (e.g., "ja", "ja-JP", "en")
+                    if (!string.IsNullOrEmpty(languageFilter))
+                    {
+                        var locale = voice.Locale ?? "";
+                        if (!locale.StartsWith(languageFilter, StringComparison.OrdinalIgnoreCase))
+                            continue;
+                    }
 
                     if (string.IsNullOrEmpty(wordToComplete) ||
                         shortName.Contains(wordToComplete, StringComparison.OrdinalIgnoreCase))
@@ -101,6 +122,11 @@ namespace Voice.Cmdlets.Azure
                 return null;
             }
         }
+
+        /// <summary>
+        /// Gets cached voices for use by other completers (e.g., AzureLanguageCompleter).
+        /// </summary>
+        public static List<AzureVoiceInfo>? GetCachedVoicesPublic() => GetCachedVoices();
 
         /// <summary>
         /// Clears the voice cache.

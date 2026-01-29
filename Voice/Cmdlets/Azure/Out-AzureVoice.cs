@@ -10,6 +10,10 @@ namespace Voice.Cmdlets.Azure
         public string? Text { get; set; }
 
         [Parameter]
+        [ArgumentCompleter(typeof(AzureLanguageCompleter))]
+        public string? Language { get; set; }
+
+        [Parameter]
         [ArgumentCompleter(typeof(AzureVoiceCompleter))]
         public string? Voice { get; set; }
 
