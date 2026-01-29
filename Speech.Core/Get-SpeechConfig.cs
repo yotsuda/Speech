@@ -44,6 +44,7 @@ namespace Speech.Core
             var windowsInstalled = IsModuleInstalled("Speech.Windows");
             var azureInstalled = IsModuleInstalled("Speech.Azure");
             var openAIInstalled = IsModuleInstalled("Speech.OpenAI");
+            var googleInstalled = IsModuleInstalled("Speech.Google");
 
             var sb = new StringBuilder();
 
@@ -81,6 +82,15 @@ namespace Speech.Core
                 sb.AppendLine($"  Voice      : {config.OpenAI?.Voice ?? "(not set)"}");
                 sb.AppendLine($"  Model      : {config.OpenAI?.Model ?? "(not set)"}");
                 sb.AppendLine($"  Key        : {MaskKey(config.OpenAI?.Key)}");
+            }
+
+            // Google settings (only if Speech.Google is installed)
+            if (googleInstalled)
+            {
+                sb.AppendLine();
+                sb.AppendLine("[Google]");
+                sb.AppendLine($"  Credential : {config.Google?.Credential ?? "(not set)"}");
+                sb.AppendLine($"  Voice      : {config.Google?.Voice ?? "(not set)"}");
             }
 
             WriteObject(sb.ToString());

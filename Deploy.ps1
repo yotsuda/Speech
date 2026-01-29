@@ -11,6 +11,7 @@ dotnet publish Speech.Core\Speech.Core.csproj -c Release -o Staging\Speech.Core 
 dotnet publish Speech.Windows\Speech.Windows.csproj -c Release -o Staging\Speech.Windows --nologo -v q
 dotnet publish Speech.Azure\Speech.Azure.csproj -c Release -o Staging\Speech.Azure --nologo -v q
 dotnet publish Speech.OpenAI\Speech.OpenAI.csproj -c Release -o Staging\Speech.OpenAI --nologo -v q
+dotnet publish Speech.Google\Speech.Google.csproj -c Release -o Staging\Speech.Google --nologo -v q
 
 function Remove-And-Create {
     param([string]$Path)
@@ -75,9 +76,20 @@ Copy-Item Staging\Speech.OpenAI\Speech.OpenAI.psd1 $target
 $count = (Get-ChildItem $target -File).Count
 Write-Host "  -> $count files" -ForegroundColor Green
 
+# === Speech.Google ===
+Write-Host "Deploying Speech.Google..." -ForegroundColor Yellow
+$target = Join-Path $ModulePath 'Speech.Google'
+Remove-And-Create $target
+
+Copy-Item Staging\Speech.Google\Speech.Google.dll $target
+Copy-Item Staging\Speech.Google\Speech.Google.psd1 $target
+
+$count = (Get-ChildItem $target -File).Count
+Write-Host "  -> $count files" -ForegroundColor Green
+
 # === Summary ===
 Write-Host "`n=== Deployment Summary ===" -ForegroundColor Cyan
-foreach ($mod in @('Speech.Core', 'Speech.Windows', 'Speech.Azure', 'Speech.OpenAI')) {
+foreach ($mod in @('Speech.Core', 'Speech.Windows', 'Speech.Azure', 'Speech.OpenAI', 'Speech.Google')) {
     $path = Join-Path $ModulePath $mod
     $files = Get-ChildItem $path -Recurse -File
     $size = ($files | Measure-Object -Property Length -Sum).Sum / 1MB

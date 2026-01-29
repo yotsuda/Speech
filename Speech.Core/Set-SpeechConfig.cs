@@ -51,6 +51,12 @@ namespace Speech.Core
         [ValidateSet("tts-1", "tts-1-hd", "gpt-4o-mini-tts")]
         public string? OpenAIModel { get; set; }
 
+        [Parameter]
+        public string? GoogleCredential { get; set; }
+
+        [Parameter]
+        public string? GoogleVoice { get; set; }
+
         protected override void ProcessRecord()
         {
             bool updated = false;
@@ -149,13 +155,28 @@ namespace Speech.Core
                 updated = true;
             }
 
+            // Google settings
+            if (!string.IsNullOrEmpty(GoogleCredential))
+            {
+                ConfigManager.UpdateGoogleCredentialIfSpecified(GoogleCredential);
+                WriteVerbose($"Google credential set to: {GoogleCredential}");
+                updated = true;
+            }
+
+            if (!string.IsNullOrEmpty(GoogleVoice))
+            {
+                ConfigManager.UpdateGoogleVoiceIfSpecified(GoogleVoice);
+                WriteVerbose($"Google voice set to: {GoogleVoice}");
+                updated = true;
+            }
+
             if (updated)
             {
                 WriteObject($"Configuration saved to: {ConfigManager.GetConfigFilePath()}");
             }
             else
             {
-                WriteWarning("No parameters specified. Use -Rate, -Volume, -Language, -WindowsVoice, -AzureVoice, -AzurePitch, -AzureKey, -AzureRegion, -OpenAIKey, -OpenAIVoice, or -OpenAIModel.");
+                WriteWarning("No parameters specified. Use -Rate, -Volume, -Language, -WindowsVoice, -AzureVoice, -AzurePitch, -AzureKey, -AzureRegion, -OpenAIKey, -OpenAIVoice, -OpenAIModel, -GoogleCredential, or -GoogleVoice.");
             }
         }
     }

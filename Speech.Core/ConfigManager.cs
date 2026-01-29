@@ -536,6 +536,42 @@ namespace Speech.Core
             SaveConfig(config);
             return true;
         }
+
+        /// <summary>
+        /// Updates Google credential path if parameter was specified
+        /// </summary>
+        public static bool UpdateGoogleCredentialIfSpecified(string? parameterValue)
+        {
+            if (parameterValue == null)
+                return false;
+
+            var config = GetConfig();
+            if (config.Google?.Credential == parameterValue)
+                return false;
+
+            config.Google ??= new GoogleConfig();
+            config.Google.Credential = parameterValue;
+            SaveConfig(config);
+            return true;
+        }
+
+        /// <summary>
+        /// Updates Google voice setting if parameter was specified
+        /// </summary>
+        public static bool UpdateGoogleVoiceIfSpecified(string? parameterValue)
+        {
+            if (parameterValue == null)
+                return false;
+
+            var config = GetConfig();
+            if (config.Google?.Voice == parameterValue)
+                return false;
+
+            config.Google ??= new GoogleConfig();
+            config.Google.Voice = parameterValue;
+            SaveConfig(config);
+            return true;
+        }
     }
 
     /// <summary>
@@ -547,6 +583,7 @@ namespace Speech.Core
         public WindowsConfig? Windows { get; set; }
         public AzureConfig? Azure { get; set; }
         public OpenAIConfig? OpenAI { get; set; }
+        public GoogleConfig? Google { get; set; }
     }
 
     public class CommonConfig
@@ -575,6 +612,12 @@ namespace Speech.Core
         public string? Key { get; set; }
         public string? Voice { get; set; }
         public string? Model { get; set; }
+    }
+
+    public class GoogleConfig
+    {
+        public string? Credential { get; set; }
+        public string? Voice { get; set; }
     }
 }
 
