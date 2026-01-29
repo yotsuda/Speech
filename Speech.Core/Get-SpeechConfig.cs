@@ -29,36 +29,67 @@ namespace Speech.Core
                 return;
             }
 
+            // Check which modules are installed
+            var windowsInstalled = IsModuleInstalled("Speech.Windows");
+            var azureInstalled = IsModuleInstalled("Speech.Azure");
+            var openAIInstalled = IsModuleInstalled("Speech.OpenAI");
+
             var sb = new StringBuilder();
 
-            // Common settings
+            // Common settings (always shown)
             sb.AppendLine("[Common]");
             sb.AppendLine($"  Rate       : {config.Common?.Rate?.ToString("F2") ?? "(not set)"}");
             sb.AppendLine($"  Volume     : {config.Common?.Volume?.ToString() ?? "(not set)"}");
             sb.AppendLine($"  Language   : {config.Common?.Language ?? "(not set)"}");
             sb.AppendLine($"  Microphone : {config.Common?.Microphone ?? "(not set)"}");
-            sb.AppendLine();
 
-            // Windows settings
-            sb.AppendLine("[Windows]");
-            sb.AppendLine($"  Voice      : {config.Windows?.Voice ?? "(not set)"}");
-            sb.AppendLine();
+            // Windows settings (only if Speech.Windows is installed)
+            if (windowsInstalled)
+            {
+                sb.AppendLine();
+                sb.AppendLine("[Windows]");
+                sb.AppendLine($"  Voice      : {config.Windows?.Voice ?? "(not set)"}");
+            }
 
-            // Azure settings
-            sb.AppendLine("[Azure]");
-            sb.AppendLine($"  Voice      : {config.Azure?.Voice ?? "(not set)"}");
-            sb.AppendLine($"  Pitch      : {config.Azure?.Pitch?.ToString() ?? "(not set)"}");
-            sb.AppendLine($"  Region     : {config.Azure?.Region ?? "(not set)"}");
-            sb.AppendLine($"  Key        : {MaskKey(config.Azure?.Key)}");
-            sb.AppendLine();
+            // Azure settings (only if Speech.Azure is installed)
+            if (azureInstalled)
+            {
+                sb.AppendLine();
+                sb.AppendLine("[Azure]");
+                sb.AppendLine($"  Voice      : {config.Azure?.Voice ?? "(not set)"}");
+                sb.AppendLine($"  Pitch      : {config.Azure?.Pitch?.ToString() ?? "(not set)"}");
+                sb.AppendLine($"  Region     : {config.Azure?.Region ?? "(not set)"}");
+                sb.AppendLine($"  Key        : {MaskKey(config.Azure?.Key)}");
+            }
 
-            // OpenAI settings
-            sb.AppendLine("[OpenAI]");
-            sb.AppendLine($"  Voice      : {config.OpenAI?.Voice ?? "(not set)"}");
-            sb.AppendLine($"  Model      : {config.OpenAI?.Model ?? "(not set)"}");
-            sb.AppendLine($"  Key        : {MaskKey(config.OpenAI?.Key)}");
+            // OpenAI settings (only if Speech.OpenAI is installed)
+            if (openAIInstalled)
+            {
+                sb.AppendLine();
+                sb.AppendLine("[OpenAI]");
+                sb.AppendLine($"  Voice      : {config.OpenAI?.Voice ?? "(not set)"}");
+                sb.AppendLine($"  Model      : {config.OpenAI?.Model ?? "(not set)"}");
+                sb.AppendLine($"  Key        : {MaskKey(config.OpenAI?.Key)}");
+            }
 
             WriteObject(sb.ToString());
+        }
+
+        private bool IsModuleInstalled(string moduleName)
+        {
+            try
+            {
+                using var ps = System.Management.Automation.PowerShell.Create(RunspaceMode.CurrentRunspace);
+                ps.AddCommand("Get-Module")
+                  .AddParameter("Name", moduleName)
+                  .AddParameter("ListAvailable");
+                var result = ps.Invoke();
+                return result.Count > 0;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static string MaskKey(string? key)
