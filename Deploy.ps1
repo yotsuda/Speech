@@ -25,7 +25,8 @@ Remove-And-Create $target
 
 Copy-Item Staging\Speech.Core\Speech.Core.dll $target
 Copy-Item Staging\Speech.Core\Speech.Core.psd1 $target
-# NAudio for microphone access (only required DLLs)
+# NAudio for microphone access and audio playback
+Copy-Item Staging\Speech.Core\NAudio.dll $target
 Copy-Item Staging\Speech.Core\NAudio.Core.dll $target
 Copy-Item Staging\Speech.Core\NAudio.Wasapi.dll $target
 Copy-Item Staging\Speech.Core\NAudio.WinMM.dll $target
@@ -53,6 +54,11 @@ Copy-Item Staging\Speech.Azure\Speech.Azure.dll $target
 Copy-Item Staging\Speech.Azure\Speech.Azure.psd1 $target
 # Azure SDK managed DLL
 Copy-Item Staging\Speech.Azure\Microsoft.CognitiveServices.Speech.csharp.dll $target
+# NAudio for audio playback
+Copy-Item Staging\Speech.Core\NAudio.dll $target
+Copy-Item Staging\Speech.Core\NAudio.Core.dll $target
+Copy-Item Staging\Speech.Core\NAudio.Wasapi.dll $target
+Copy-Item Staging\Speech.Core\NAudio.WinMM.dll $target
 # Windows x64 native libs only
 $nativeTarget = Join-Path $target 'runtimes\win-x64\native'
 New-Item -ItemType Directory -Path $nativeTarget -Force | Out-Null
@@ -68,6 +74,11 @@ Remove-And-Create $target
 
 Copy-Item Staging\Speech.OpenAI\Speech.OpenAI.dll $target
 Copy-Item Staging\Speech.OpenAI\Speech.OpenAI.psd1 $target
+# NAudio for audio recording and playback
+Copy-Item Staging\Speech.Core\NAudio.dll $target
+Copy-Item Staging\Speech.Core\NAudio.Core.dll $target
+Copy-Item Staging\Speech.Core\NAudio.Wasapi.dll $target
+Copy-Item Staging\Speech.Core\NAudio.WinMM.dll $target
 
 $count = (Get-ChildItem $target -File).Count
 Write-Host "  -> $count files" -ForegroundColor Green
