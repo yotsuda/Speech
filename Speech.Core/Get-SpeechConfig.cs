@@ -5,11 +5,22 @@ using System.Text;
 namespace Speech.Core
 {
     [Cmdlet(VerbsCommon.Get, "SpeechConfig")]
+    [OutputType(typeof(string))]
     public class GetSpeechConfigCmdlet : PSCmdlet
     {
+        [Parameter]
+        public SwitchParameter Path { get; set; }
+
         protected override void ProcessRecord()
         {
             var configPath = ConfigManager.GetConfigFilePath();
+
+            // If -Path is specified, just return the path
+            if (Path)
+            {
+                WriteObject(configPath);
+                return;
+            }
 
             if (!ConfigManager.ConfigExists())
             {
