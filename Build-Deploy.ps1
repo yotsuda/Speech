@@ -1,11 +1,10 @@
-
 <#
 .SYNOPSIS
-    Build and deploy Voice module to PowerShell 7 Modules directory.
+    Build and deploy Speech module to PowerShell 7 Modules directory.
 
 .DESCRIPTION
-    Builds the Voice module in Release configuration and deploys to:
-    C:\Program Files\PowerShell\7\Modules\Voice
+    Builds the Speech module in Release configuration and deploys to:
+    C:\Program Files\PowerShell\7\Modules\Speech
 
 .PARAMETER BuildOnly
     Only build, do not deploy.
@@ -30,17 +29,17 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $ProjectRoot = $PSScriptRoot
-$ProjectFile = Join-Path $ProjectRoot 'Voice\Voice.csproj'
-$BuildDir = Join-Path $ProjectRoot 'Voice\bin\Release\net9.0'
+$ProjectFile = Join-Path $ProjectRoot 'Speech\Speech.csproj'
+$BuildDir = Join-Path $ProjectRoot 'Speech\bin\Release\net9.0'
 $StagingDir = Join-Path $ProjectRoot 'Staging'
-$DeployDir = 'C:\Program Files\PowerShell\7\Modules\Voice'
+$DeployDir = 'C:\Program Files\PowerShell\7\Modules\Speech'
 
 # =============================================================================
 # Build
 # =============================================================================
 if (-not $DeployOnly) {
     Write-Host '========================================' -ForegroundColor Cyan
-    Write-Host ' Building Voice module...' -ForegroundColor Cyan
+    Write-Host ' Building Speech module...' -ForegroundColor Cyan
     Write-Host '========================================' -ForegroundColor Cyan
 
     dotnet publish $ProjectFile -c Release -o $BuildDir
@@ -63,7 +62,7 @@ if ($BuildOnly) {
 # Deploy
 # =============================================================================
 Write-Host '========================================' -ForegroundColor Cyan
-Write-Host ' Deploying Voice module...' -ForegroundColor Cyan
+Write-Host ' Deploying Speech module...' -ForegroundColor Cyan
 Write-Host '========================================' -ForegroundColor Cyan
 
 # Check if build directory exists
@@ -83,8 +82,8 @@ New-Item -ItemType Directory -Path $DeployDir -Force | Out-Null
 
 # DLL files to copy from BuildDir
 $dllFiles = @(
-    'Voice.dll',
-    'Voice.deps.json',
+    'Speech.dll',
+    'Speech.deps.json',
     'Microsoft.CognitiveServices.Speech.csharp.dll',
     'NAudio.dll',
     'NAudio.Core.dll',
@@ -102,9 +101,9 @@ $dllFiles = @(
 
 # Module definition files to copy from StagingDir
 $moduleFiles = @(
-    'Voice.psd1',
-    'Voice.psm1',
-    'Voice.Format.ps1xml'
+    'Speech.psd1',
+    'Speech.psm1',
+    'Speech.Format.ps1xml'
 )
 
 Write-Host 'Copying DLL files from build output...'
@@ -155,6 +154,6 @@ Write-Host ''
 Write-Host "Deployed to: $DeployDir" -ForegroundColor Yellow
 Write-Host ''
 Write-Host 'To verify:' -ForegroundColor Cyan
-Write-Host '  Get-Module Voice -ListAvailable'
-Write-Host '  Import-Module Voice -Force'
-Write-Host '  Get-Command -Module Voice'
+Write-Host '  Get-Module Speech -ListAvailable'
+Write-Host '  Import-Module Speech -Force'
+Write-Host '  Get-Command -Module Speech'
