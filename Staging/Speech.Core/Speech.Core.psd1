@@ -7,6 +7,13 @@
     Description = 'Core module for Speech - configuration management and utilities'
     PowerShellVersion = '7.0'
 
+    RequiredAssemblies = @(
+        'NAudio.dll',
+        'NAudio.Core.dll',
+        'NAudio.Wasapi.dll',
+        'NAudio.WinMM.dll'
+    )
+
     CmdletsToExport = @(
         'Get-SpeechConfig',
         'Set-SpeechConfig',
