@@ -39,6 +39,18 @@ namespace Speech.Core
         [Parameter]
         public string? AzureRegion { get; set; }
 
+        [Parameter]
+        public string? OpenAIKey { get; set; }
+
+        [Parameter]
+        [ValidateSet("alloy", "ash", "ballad", "coral", "echo", "fable",
+                     "onyx", "nova", "sage", "shimmer", "verse")]
+        public string? OpenAIVoice { get; set; }
+
+        [Parameter]
+        [ValidateSet("tts-1", "tts-1-hd", "gpt-4o-mini-tts")]
+        public string? OpenAIModel { get; set; }
+
         protected override void ProcessRecord()
         {
             bool updated = false;
@@ -115,13 +127,35 @@ namespace Speech.Core
                 updated = true;
             }
 
+            // OpenAI settings
+            if (!string.IsNullOrEmpty(OpenAIKey))
+            {
+                ConfigManager.UpdateOpenAIKeyIfSpecified(OpenAIKey);
+                WriteVerbose("OpenAI key updated");
+                updated = true;
+            }
+
+            if (!string.IsNullOrEmpty(OpenAIVoice))
+            {
+                ConfigManager.UpdateOpenAIVoiceIfSpecified(OpenAIVoice);
+                WriteVerbose($"OpenAI voice set to: {OpenAIVoice}");
+                updated = true;
+            }
+
+            if (!string.IsNullOrEmpty(OpenAIModel))
+            {
+                ConfigManager.UpdateOpenAIModelIfSpecified(OpenAIModel);
+                WriteVerbose($"OpenAI model set to: {OpenAIModel}");
+                updated = true;
+            }
+
             if (updated)
             {
                 WriteObject($"Configuration saved to: {ConfigManager.GetConfigFilePath()}");
             }
             else
             {
-                WriteWarning("No parameters specified. Use -Rate, -Volume, -Language, -WindowsVoice, -AzureVoice, -AzurePitch, -AzureKey, or -AzureRegion.");
+                WriteWarning("No parameters specified. Use -Rate, -Volume, -Language, -WindowsVoice, -AzureVoice, -AzurePitch, -AzureKey, -AzureRegion, -OpenAIKey, -OpenAIVoice, or -OpenAIModel.");
             }
         }
     }

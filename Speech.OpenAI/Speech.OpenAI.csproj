@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Speech.OpenAI</AssemblyName>
+    <RootNamespace>Speech.OpenAI</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="System.Management.Automation" Version="7.2.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Speech.Core\Speech.Core.csproj" />
+  </ItemGroup>
+
+</Project>

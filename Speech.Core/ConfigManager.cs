@@ -485,6 +485,57 @@ namespace Speech.Core
             SaveConfig(config);
             return true;
         }
+
+        /// <summary>
+        /// Updates OpenAI key setting if parameter was specified
+        /// </summary>
+        public static bool UpdateOpenAIKeyIfSpecified(string? parameterValue)
+        {
+            if (parameterValue == null)
+                return false;
+
+            var config = GetConfig();
+            config.OpenAI ??= new OpenAIConfig();
+            config.OpenAI.Key = parameterValue;
+            SaveConfig(config);
+            return true;
+        }
+
+        /// <summary>
+        /// Updates OpenAI voice setting if parameter was specified
+        /// </summary>
+        public static bool UpdateOpenAIVoiceIfSpecified(string? parameterValue)
+        {
+            if (parameterValue == null)
+                return false;
+
+            var config = GetConfig();
+            if (config.OpenAI?.Voice == parameterValue)
+                return false;
+
+            config.OpenAI ??= new OpenAIConfig();
+            config.OpenAI.Voice = parameterValue;
+            SaveConfig(config);
+            return true;
+        }
+
+        /// <summary>
+        /// Updates OpenAI model setting if parameter was specified
+        /// </summary>
+        public static bool UpdateOpenAIModelIfSpecified(string? parameterValue)
+        {
+            if (parameterValue == null)
+                return false;
+
+            var config = GetConfig();
+            if (config.OpenAI?.Model == parameterValue)
+                return false;
+
+            config.OpenAI ??= new OpenAIConfig();
+            config.OpenAI.Model = parameterValue;
+            SaveConfig(config);
+            return true;
+        }
     }
 
     /// <summary>
@@ -495,6 +546,7 @@ namespace Speech.Core
         public CommonConfig? Common { get; set; }
         public WindowsConfig? Windows { get; set; }
         public AzureConfig? Azure { get; set; }
+        public OpenAIConfig? OpenAI { get; set; }
     }
 
     public class CommonConfig
@@ -517,6 +569,12 @@ namespace Speech.Core
         public string? Region { get; set; }
         public string? Key { get; set; }
     }
-}
 
+    public class OpenAIConfig
+    {
+        public string? Key { get; set; }
+        public string? Voice { get; set; }
+        public string? Model { get; set; }
+    }
+}
 
