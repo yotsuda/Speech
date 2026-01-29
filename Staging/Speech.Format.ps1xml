@@ -2,7 +2,7 @@
 <Configuration>
   <ViewDefinitions>
     <View>
-      <n>Speech.Config.Common</n>
+      <Name>Speech.Config.Common</Name>
       <ViewSelectedBy>
         <TypeName>Speech.Config.Common</TypeName>
       </ViewSelectedBy>
@@ -21,7 +21,7 @@
       </ListControl>
     </View>
     <View>
-      <n>Speech.Config.Windows</n>
+      <Name>Speech.Config.Windows</Name>
       <ViewSelectedBy>
         <TypeName>Speech.Config.Windows</TypeName>
       </ViewSelectedBy>
@@ -37,7 +37,7 @@
       </ListControl>
     </View>
     <View>
-      <n>Speech.Config.Azure</n>
+      <Name>Speech.Config.Azure</Name>
       <ViewSelectedBy>
         <TypeName>Speech.Config.Azure</TypeName>
       </ViewSelectedBy>
