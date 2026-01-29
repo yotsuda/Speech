@@ -46,13 +46,24 @@ namespace Voice.Cmdlets.Azure
                     languageFilter = fakeBoundParameters["AzureLanguage"]?.ToString();
                 }
 
+                // If no explicit language specified, use the language from config voice
+                if (string.IsNullOrEmpty(languageFilter))
+                {
+                    var config = ConfigManager.GetConfig();
+                    var configVoice = config.Azure?.Voice;
+                    if (!string.IsNullOrEmpty(configVoice))
+                    {
+                        languageFilter = ExtractLanguageFromVoice(configVoice);
+                    }
+                }
+
                 foreach (var voice in voices)
                 {
                     var shortName = voice.ShortName ?? voice.Name ?? "";
                     if (string.IsNullOrEmpty(shortName))
                         continue;
 
-                    // Filter by language if specified (e.g., "ja", "ja-JP", "en")
+                    // Filter by language (e.g., "ja", "ja-JP", "en")
                     if (!string.IsNullOrEmpty(languageFilter))
                     {
                         var locale = voice.Locale ?? "";
@@ -138,6 +149,23 @@ namespace Voice.Cmdlets.Azure
                 _cachedVoices = null;
                 _cacheTime = DateTime.MinValue;
             }
+        }
+
+        /// <summary>
+        /// Extracts language code from voice name (e.g., "ja-JP-NanamiNeural" -> "ja-JP")
+        /// </summary>
+        private static string? ExtractLanguageFromVoice(string voice)
+        {
+            if (string.IsNullOrEmpty(voice))
+                return null;
+
+            var parts = voice.Split('-');
+            if (parts.Length >= 2)
+            {
+                return $"{parts[0]}-{parts[1]}";
+            }
+
+            return null;
         }
     }
 }

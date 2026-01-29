@@ -35,21 +35,19 @@ namespace Voice.Cmdlets.Azure
             {
                 var config = ConfigManager.GetConfig();
 
-                var voice = Voice ?? config.Azure?.Voice ?? "en-US-JennyNeural";
+                var voice = ResolveVoice(config);
                 var rate = Rate ?? config.Common?.Rate ?? 1.0;
                 var volume = Volume ?? config.Common?.Volume ?? 100;
                 var pitch = Pitch ?? config.Azure?.Pitch ?? 0;
 
                 var task = SynthesizeSpeechAsync(voice, rate, volume, pitch);
                 task.GetAwaiter().GetResult();
-
-
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("Invalid audio format") || ex.Message.Contains("empty audio data"))
             {
                 // Check if this might be due to language mismatch
                 var config = ConfigManager.GetConfig();
-                var voice = Voice ?? config.Azure?.Voice ?? "en-US-JennyNeural";
+                var voice = ResolveVoice(config);
                 var textLanguage = DetectTextLanguage(Text);
                 var voiceLanguage = ExtractVoiceLanguage(voice);
 
@@ -90,6 +88,91 @@ namespace Voice.Cmdlets.Azure
                     Text));
                 WriteVerbose($"Full exception details:" + System.Environment.NewLine + ex);
             }
+        }
+
+        /// <summary>
+        /// Resolves which voice to use based on -Voice, -Language, and config settings.
+        /// Priority: -Voice > -Language (if config voice doesn't match) > config voice > default
+        /// </summary>
+        private string ResolveVoice(VoiceConfig config)
+        {
+            // If -Voice is explicitly specified, use it
+            if (!string.IsNullOrEmpty(Voice))
+                return Voice;
+
+            var configVoice = config.Azure?.Voice ?? "en-US-JennyNeural";
+
+            // If -Language is not specified, use config voice
+            if (string.IsNullOrEmpty(Language))
+                return configVoice;
+
+            // -Language is specified, check if config voice matches
+            var configVoiceLanguage = ExtractVoiceLanguage(configVoice);
+
+            // Normalize language input (e.g., "ja" -> "ja-JP" for comparison)
+            var normalizedLanguage = NormalizeLanguage(Language);
+
+            if (configVoiceLanguage != null &&
+                configVoiceLanguage.StartsWith(normalizedLanguage, StringComparison.OrdinalIgnoreCase))
+            {
+                // Config voice already matches the requested language
+                return configVoice;
+            }
+
+            // Config voice doesn't match, select a default voice for the requested language
+            var defaultVoice = GetDefaultVoiceForLanguage(normalizedLanguage);
+            WriteVerbose($"Language '{Language}' specified. Using voice: {defaultVoice}");
+            return defaultVoice;
+        }
+
+        /// <summary>
+        /// Normalizes a language code (e.g., "ja" -> "ja-JP", "en" -> "en-US")
+        /// </summary>
+        private static string NormalizeLanguage(string language)
+        {
+            // If already in full format (e.g., "ja-JP"), return as-is
+            if (language.Contains('-'))
+                return language;
+
+            // Map short codes to full locale codes
+            return language.ToLowerInvariant() switch
+            {
+                "ja" => "ja-JP",
+                "en" => "en-US",
+                "zh" => "zh-CN",
+                "ko" => "ko-KR",
+                "de" => "de-DE",
+                "fr" => "fr-FR",
+                "es" => "es-ES",
+                "it" => "it-IT",
+                "pt" => "pt-BR",
+                "ru" => "ru-RU",
+                _ => $"{language}-{language.ToUpperInvariant()}"  // Guess: "xx" -> "xx-XX"
+            };
+        }
+
+        /// <summary>
+        /// Gets a default voice for a given language/locale.
+        /// </summary>
+        private static string GetDefaultVoiceForLanguage(string locale)
+        {
+            // Extract primary language code
+            var lang = locale.Split('-')[0].ToLowerInvariant();
+
+            return lang switch
+            {
+                "ja" => "ja-JP-NanamiNeural",
+                "en" => "en-US-JennyNeural",
+                "zh" => "zh-CN-XiaoxiaoNeural",
+                "ko" => "ko-KR-SunHiNeural",
+                "de" => "de-DE-KatjaNeural",
+                "fr" => "fr-FR-DeniseNeural",
+                "es" => "es-ES-ElviraNeural",
+                "it" => "it-IT-ElsaNeural",
+                "pt" => "pt-BR-FranciscaNeural",
+                "ru" => "ru-RU-SvetlanaNeural",
+                _ => "en-US-JennyNeural"  // Fallback
+            };
         }
 
         private async Task SynthesizeSpeechAsync(string voice, double rate, int volume, int pitch)
