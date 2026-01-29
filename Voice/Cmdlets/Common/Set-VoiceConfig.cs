@@ -1,4 +1,5 @@
 using System.Management.Automation;
+using Voice.Cmdlets.Azure;
 
 namespace Voice.Cmdlets.Common
 {
@@ -24,6 +25,7 @@ namespace Voice.Cmdlets.Common
         public string? WindowsVoice { get; set; }
 
         [Parameter]
+        [ArgumentCompleter(typeof(AzureVoiceCompleter))]
         public string? AzureVoice { get; set; }
 
         [Parameter]
