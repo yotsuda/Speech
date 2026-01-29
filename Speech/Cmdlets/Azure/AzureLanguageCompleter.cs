@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Language;
+using Speech.Cmdlets.Common;
 
 namespace Speech.Cmdlets.Azure
 {
@@ -23,24 +23,50 @@ namespace Speech.Cmdlets.Azure
 
             try
             {
-                var voices = AzureSpeechCompleter.GetCachedVoicesPublic();
-                if (voices == null)
+                // Check if Azure credentials are configured
+                var config = ConfigManager.GetConfig();
+                if (string.IsNullOrEmpty(config.Azure?.Key) || string.IsNullOrEmpty(config.Azure?.Region))
+                {
+                    results.Add(new CompletionResult(
+                        "Set-SpeechConfig",
+                        "⚠ Run: Set-SpeechConfig -AzureKey <key> -AzureRegion <region>",
+                        CompletionResultType.Text,
+                        "Azure credentials not configured. Run Set-SpeechConfig first."));
                     return results;
+                }
 
-                // Get distinct locales
-                var locales = voices
-                    .Where(v => !string.IsNullOrEmpty(v.Locale))
-                    .Select(v => v.Locale!)
-                    .Distinct()
-                    .OrderBy(l => l);
+                var voices = AzureSpeechCompleter.GetCachedVoicesPublic();
+                if (voices == null || voices.Count == 0)
+                {
+                    results.Add(new CompletionResult(
+                        "",
+                        "⚠ Failed to fetch voice list from Azure",
+                        CompletionResultType.Text,
+                        "Could not retrieve voices. Check your Azure credentials."));
+                    return results;
+                }
 
-                foreach (var locale in locales)
+                // Get distinct locales from API
+                var locales = new HashSet<string>();
+                foreach (var v in voices)
+                {
+                    if (!string.IsNullOrEmpty(v.Locale))
+                        locales.Add(v.Locale);
+                }
+
+                var sortedLocales = new List<string>(locales);
+                sortedLocales.Sort();
+
+                foreach (var locale in sortedLocales)
                 {
                     if (string.IsNullOrEmpty(wordToComplete) ||
                         locale.StartsWith(wordToComplete, StringComparison.OrdinalIgnoreCase))
                     {
-                        // Count voices for this locale
-                        var count = voices.Count(v => v.Locale == locale);
+                        int count = 0;
+                        foreach (var v in voices)
+                        {
+                            if (v.Locale == locale) count++;
+                        }
                         var tooltip = $"{locale} ({count} voices)";
 
                         results.Add(new CompletionResult(

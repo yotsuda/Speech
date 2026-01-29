@@ -30,9 +30,28 @@ namespace Speech.Cmdlets.Azure
 
             try
             {
-                var voices = GetCachedVoices();
-                if (voices == null)
+                // Check if Azure credentials are configured
+                var config = ConfigManager.GetConfig();
+                if (string.IsNullOrEmpty(config.Azure?.Key) || string.IsNullOrEmpty(config.Azure?.Region))
+                {
+                    results.Add(new CompletionResult(
+                        "Set-SpeechConfig",
+                        "⚠ Run: Set-SpeechConfig -AzureKey <key> -AzureRegion <region>",
+                        CompletionResultType.Text,
+                        "Azure credentials not configured. Run Set-SpeechConfig first."));
                     return results;
+                }
+
+                var voices = GetCachedVoices();
+                if (voices == null || voices.Count == 0)
+                {
+                    results.Add(new CompletionResult(
+                        "",
+                        "⚠ Failed to fetch voice list from Azure",
+                        CompletionResultType.Text,
+                        "Could not retrieve voices. Check your Azure credentials."));
+                    return results;
+                }
 
                 // Get language filter from bound parameters (-Language)
                 string? languageFilter = null;
@@ -44,8 +63,6 @@ namespace Speech.Cmdlets.Azure
                 // If no explicit language specified, check config
                 if (string.IsNullOrEmpty(languageFilter))
                 {
-                    var config = ConfigManager.GetConfig();
-
                     // Priority 1: Use language from Azure Voice setting
                     var configVoice = config.Azure?.Voice;
                     if (!string.IsNullOrEmpty(configVoice))
