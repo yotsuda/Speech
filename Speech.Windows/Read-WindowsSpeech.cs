@@ -48,9 +48,9 @@ namespace Speech.Windows
         private readonly List<RecognitionResult> _results = new();
         private readonly object _lock = new();
         private readonly SpinnerDisplay _spinner = new();
-        private bool _stopRequested = false;
+        private volatile bool _stopRequested = false;
         private DateTime _lastActivityTime = DateTime.MinValue;
-        private bool _hasRecognizedSpeech = false;
+        private volatile bool _hasRecognizedSpeech = false;
         private string _currentHypothesis = "";
         private WaveInEvent? _waveIn;
         private AudioPipeStream? _audioStream;

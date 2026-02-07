@@ -14,7 +14,4 @@
     <ProjectReference Include="..\Speech.Core\Speech.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="Speech.Google.psd1" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
 </Project>

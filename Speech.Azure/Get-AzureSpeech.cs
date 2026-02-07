@@ -28,14 +28,14 @@ namespace Speech.Azure
 
         private async Task<System.Collections.Generic.List<AzureSpeechInfo>> GetVoicesAsync()
         {
-            var manager = AzureAudioManager.GetInstance(Key!, Region);
+            var manager = AzureAudioManager.GetInstance(Key!, Region!);
             var allVoices = await manager.GetAvailableVoicesAsync();
             var filtered = new System.Collections.Generic.List<AzureSpeechInfo>();
 
             foreach (var voice in allVoices)
             {
                 // Filter by locale if specified
-                if (!string.IsNullOrEmpty(Locale) && !voice.Locale.StartsWith(Locale, StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrEmpty(Locale) && voice.Locale?.StartsWith(Locale, StringComparison.OrdinalIgnoreCase) != true)
                 {
                     continue;
                 }

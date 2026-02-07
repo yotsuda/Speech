@@ -135,12 +135,21 @@ namespace Speech.Core
         /// </summary>
         private static string GetDefaultAzureVoice()
         {
-            var culture = System.Globalization.CultureInfo.CurrentUICulture;
+            var locale = System.Globalization.CultureInfo.CurrentUICulture.Name;
+            return GetDefaultVoiceForLanguage(locale);
+        }
 
-            // TODO: Hardcoded for now. Consider fetching locale-appropriate voices via API.
-            return culture.TwoLetterISOLanguageName switch
+        /// <summary>
+        /// Gets default Azure voice for a given language/locale
+        /// </summary>
+        public static string GetDefaultVoiceForLanguage(string locale)
+        {
+            var lang = locale.Split('-')[0].ToLowerInvariant();
+
+            return lang switch
             {
                 "ja" => "ja-JP-NanamiNeural",
+                "en" => "en-US-JennyNeural",
                 "zh" => "zh-CN-XiaoxiaoNeural",
                 "ko" => "ko-KR-SunHiNeural",
                 "de" => "de-DE-KatjaNeural",
@@ -171,8 +180,9 @@ namespace Speech.Core
                 string json = File.ReadAllText(configPath);
                 return JsonSerializer.Deserialize<SpeechConfig>(json, JsonOptions);
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Failed to load Speech config from {configPath}: {ex.Message}");
                 return null;
             }
         }

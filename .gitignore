@@ -23,6 +23,15 @@ memo.txt
 # Large example files
 json_example.json
 
+# Staging (build artifacts, but keep .psd1 and .psm1)
+Staging/
+!Staging/**/*.psd1
+!Staging/**/*.psm1
+
+# Work tracking
+work_procedure.md
+work_progress.md
+
 # Development files
 IMPLEMENTATION*.md
 Test-*.ps1

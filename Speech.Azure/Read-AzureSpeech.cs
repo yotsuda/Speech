@@ -43,9 +43,9 @@ namespace Speech.Azure
         private readonly List<RecognitionResult> _results = new();
         private readonly object _lock = new();
         private readonly SpinnerDisplay _spinner = new();
-        private bool _stopRequested = false;
+        private volatile bool _stopRequested = false;
         private DateTime _lastActivityTime = DateTime.MinValue;
-        private bool _hasRecognizedSpeech = false;
+        private volatile bool _hasRecognizedSpeech = false;
         private string _currentHypothesis = "";
 
         protected override void ProcessRecord()
@@ -65,6 +65,7 @@ namespace Speech.Azure
         private async Task RecognizeAsync()
         {
             // Ensure UTF-8 output for spinner characters
+            var originalEncoding = Console.OutputEncoding;
             Console.OutputEncoding = Encoding.UTF8;
             Console.CursorVisible = false;
 
@@ -209,6 +210,7 @@ namespace Speech.Azure
             _spinner.ClearCurrentLine();
             Console.WriteLine();
             Console.CursorVisible = true;
+            Console.OutputEncoding = originalEncoding;
 
             // OutputResults moved to ProcessRecord
         }

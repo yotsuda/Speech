@@ -49,7 +49,7 @@ namespace Speech.Azure
                 var config = ConfigManager.GetConfig();
                 var voice = ResolveVoice(config);
                 var textLanguage = DetectTextLanguage(Text);
-                var voiceLanguage = ExtractVoiceLanguage(voice);
+                var voiceLanguage = ConfigManager.ExtractLanguageFromVoice(voice);
 
                 string errorMessage = ex.Message;
 
@@ -108,42 +108,18 @@ namespace Speech.Azure
             if (!string.IsNullOrEmpty(Language))
             {
                 var normalizedLanguage = ConfigManager.NormalizeLanguage(Language);
-                return GetDefaultVoiceForLanguage(normalizedLanguage);
+                return ConfigManager.GetDefaultVoiceForLanguage(normalizedLanguage);
             }
 
             // Priority 4: config.Common.Language is set
             if (!string.IsNullOrEmpty(config.Common?.Language))
             {
                 var normalizedLanguage = ConfigManager.NormalizeLanguage(config.Common.Language);
-                return GetDefaultVoiceForLanguage(normalizedLanguage);
+                return ConfigManager.GetDefaultVoiceForLanguage(normalizedLanguage);
             }
 
             // Priority 5: Fallback to default
             return "en-US-JennyNeural";
-        }
-
-        /// <summary>
-        /// Gets a default voice for a given language/locale.
-        /// </summary>
-        private static string GetDefaultVoiceForLanguage(string locale)
-        {
-            // Extract primary language code
-            var lang = locale.Split('-')[0].ToLowerInvariant();
-
-            return lang switch
-            {
-                "ja" => "ja-JP-NanamiNeural",
-                "en" => "en-US-JennyNeural",
-                "zh" => "zh-CN-XiaoxiaoNeural",
-                "ko" => "ko-KR-SunHiNeural",
-                "de" => "de-DE-KatjaNeural",
-                "fr" => "fr-FR-DeniseNeural",
-                "es" => "es-ES-ElviraNeural",
-                "it" => "it-IT-ElsaNeural",
-                "pt" => "pt-BR-FranciscaNeural",
-                "ru" => "ru-RU-SvetlanaNeural",
-                _ => "en-US-JennyNeural"  // Fallback
-            };
         }
 
         private async Task SynthesizeSpeechAsync(string voice, double rate, int volume, int pitch)
@@ -194,31 +170,22 @@ namespace Speech.Azure
             if (string.IsNullOrEmpty(text))
                 return null;
 
+            bool hasKana = false;
+            bool hasCjk = false;
+            bool hasHangul = false;
+
             foreach (char c in text)
             {
-                if ((c >= 0x3040 && c <= 0x309F) || (c >= 0x30A0 && c <= 0x30FF)) return "ja-JP"; // Hiragana/Katakana
-                if (c >= 0x4E00 && c <= 0x9FFF) return "ja-JP"; // CJK (default to Japanese)
-                if (c >= 0xAC00 && c <= 0xD7AF) return "ko-KR"; // Hangul
+                if ((c >= 0x3040 && c <= 0x309F) || (c >= 0x30A0 && c <= 0x30FF)) hasKana = true;
+                else if (c >= 0x4E00 && c <= 0x9FFF) hasCjk = true;
+                else if (c >= 0xAC00 && c <= 0xD7AF) hasHangul = true;
             }
+
+            if (hasKana) return "ja-JP";
+            if (hasHangul) return "ko-KR";
+            if (hasCjk) return "zh-CN";
 
             return "en-US";
-        }
-
-        /// <summary>
-        /// Extracts the language code from voice name (e.g., "ja-JP-NanamiNeural" -> "ja-JP")
-        /// </summary>
-        private string? ExtractVoiceLanguage(string? voice)
-        {
-            if (string.IsNullOrEmpty(voice))
-                return null;
-
-            var parts = voice.Split('-');
-            if (parts.Length >= 2)
-            {
-                return $"{parts[0]}-{parts[1]}";
-            }
-
-            return null;
         }
     }
 }

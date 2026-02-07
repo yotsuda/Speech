@@ -8,7 +8,7 @@ namespace Speech.Azure
     /// </summary>
     public class AzureAudioManager
     {
-        private static AzureAudioManager _instance;
+        private static AzureAudioManager? _instance;
         private static readonly object _lock = new object();
 
         private readonly string _key;
@@ -24,7 +24,6 @@ namespace Speech.Azure
                 Timeout = TimeSpan.FromSeconds(60)
             };
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "Speech");
-            _httpClient.DefaultRequestHeaders.Add("X-Microsoft-OutputFormat", "audio-16khz-128kbitrate-mono-mp3");
         }
 
         public static AzureAudioManager GetInstance(string key, string region)
@@ -52,6 +51,7 @@ namespace Speech.Azure
 
             var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
             request.Headers.Add("Ocp-Apim-Subscription-Key", _key);
+            request.Headers.Add("X-Microsoft-OutputFormat", "audio-16khz-128kbitrate-mono-mp3");
             request.Content = new StringContent(ssml, Encoding.UTF8, "application/ssml+xml");
 
             var response = await _httpClient.SendAsync(request);
@@ -102,7 +102,6 @@ namespace Speech.Azure
             request.Headers.Add("Ocp-Apim-Subscription-Key", _key);
 
 
-
             var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
@@ -118,30 +117,6 @@ namespace Speech.Azure
             });
 
             return voices ?? new List<AzureSpeechInfo>();
-        }
-
-        /// <summary>
-        /// Recognize speech once (single utterance)
-        /// </summary>
-        public async Task<string> RecognizeOnceAsync(string language, int timeoutSeconds)
-        {
-            // Note: Azure Speech SDK would be better for STT, but using REST API for simplicity
-            // This is a simplified implementation
-            throw new NotImplementedException(
-                "Speech recognition requires Azure Speech SDK. " +
-                "Install Microsoft.CognitiveServices.Speech NuGet package for full STT support. " +
-                "Use Windows Speech API (Invoke-WindowsVoiceRecognition) as an alternative.");
-        }
-
-        /// <summary>
-        /// Recognize speech continuously
-        /// </summary>
-        public async Task<List<string>> RecognizeContinuousAsync(string language, Func<bool> shouldStop)
-        {
-            throw new NotImplementedException(
-                "Speech recognition requires Azure Speech SDK. " +
-                "Install Microsoft.CognitiveServices.Speech NuGet package for full STT support. " +
-                "Use Windows Speech API (Invoke-WindowsVoiceRecognition) as an alternative.");
         }
 
         private async Task PlayAudioAsync(byte[] audioData)
