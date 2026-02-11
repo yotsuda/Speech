@@ -82,6 +82,7 @@ namespace Speech.Core
                 sb.AppendLine("[OpenAI]");
                 sb.AppendLine($"  Voice      : {config.OpenAI?.Voice ?? "(not set)"}");
                 sb.AppendLine($"  Model      : {config.OpenAI?.Model ?? "(not set)"}");
+                sb.AppendLine($"  STTModel   : {config.OpenAI?.STTModel ?? "(not set)"}");
                 sb.AppendLine($"  Key        : {MaskKey(config.OpenAI?.Key)}");
             }
 

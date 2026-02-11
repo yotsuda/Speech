@@ -34,6 +34,7 @@ namespace Speech.OpenAI
             var results = new List<CompletionResult>();
 
             var models = commandName.Contains("Read", StringComparison.OrdinalIgnoreCase)
+                || parameterName.Contains("STT", StringComparison.OrdinalIgnoreCase)
                 ? STTModels
                 : TTSModels;
 

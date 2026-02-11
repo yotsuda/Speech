@@ -560,7 +560,7 @@ namespace Speech.Core
         }
 
         /// <summary>
-        /// Updates OpenAI model setting if parameter was specified
+        /// Updates OpenAI TTS model setting if parameter was specified
         /// </summary>
         public static bool UpdateOpenAIModelIfSpecified(string? parameterValue)
         {
@@ -573,6 +573,24 @@ namespace Speech.Core
 
             config.OpenAI ??= new OpenAIConfig();
             config.OpenAI.Model = parameterValue;
+            SaveConfig(config);
+            return true;
+        }
+
+        /// <summary>
+        /// Updates OpenAI STT model setting if parameter was specified
+        /// </summary>
+        public static bool UpdateOpenAISTTModelIfSpecified(string? parameterValue)
+        {
+            if (parameterValue == null)
+                return false;
+
+            var config = GetConfig();
+            if (config.OpenAI?.STTModel == parameterValue)
+                return false;
+
+            config.OpenAI ??= new OpenAIConfig();
+            config.OpenAI.STTModel = parameterValue;
             SaveConfig(config);
             return true;
         }
@@ -653,6 +671,7 @@ namespace Speech.Core
         public string? Key { get; set; }
         public string? Voice { get; set; }
         public string? Model { get; set; }
+        public string? STTModel { get; set; }
     }
 
     public class GoogleConfig

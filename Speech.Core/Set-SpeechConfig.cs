@@ -47,13 +47,13 @@ namespace Speech.Core
         public string? OpenAIKey { get; set; }
 
         [Parameter]
-        [ValidateSet("alloy", "ash", "ballad", "coral", "echo", "fable",
-                     "onyx", "nova", "sage", "shimmer", "verse")]
         public string? OpenAIVoice { get; set; }
 
         [Parameter]
-        [ValidateSet("tts-1", "tts-1-hd", "gpt-4o-mini-tts")]
         public string? OpenAIModel { get; set; }
+
+        [Parameter]
+        public string? OpenAISTTModel { get; set; }
 
         [Parameter]
         public string? GoogleCredential { get; set; }
@@ -162,7 +162,14 @@ namespace Speech.Core
             if (!string.IsNullOrEmpty(OpenAIModel))
             {
                 ConfigManager.UpdateOpenAIModelIfSpecified(OpenAIModel);
-                WriteVerbose($"OpenAI model set to: {OpenAIModel}");
+                WriteVerbose($"OpenAI TTS model set to: {OpenAIModel}");
+                updated = true;
+            }
+
+            if (!string.IsNullOrEmpty(OpenAISTTModel))
+            {
+                ConfigManager.UpdateOpenAISTTModelIfSpecified(OpenAISTTModel);
+                WriteVerbose($"OpenAI STT model set to: {OpenAISTTModel}");
                 updated = true;
             }
 
@@ -187,7 +194,7 @@ namespace Speech.Core
             }
             else
             {
-                WriteWarning("No parameters specified. Use -Rate, -Volume, -OutputDevice, -Language, -WindowsVoice, -AzureVoice, -AzurePitch, -AzureKey, -AzureRegion, -OpenAIKey, -OpenAIVoice, -OpenAIModel, -GoogleCredential, or -GoogleVoice.");
+                WriteWarning("No parameters specified. Use -Rate, -Volume, -OutputDevice, -Language, -WindowsVoice, -AzureVoice, -AzurePitch, -AzureKey, -AzureRegion, -OpenAIKey, -OpenAIVoice, -OpenAIModel, -OpenAISTTModel, -GoogleCredential, or -GoogleVoice.");
             }
         }
     }

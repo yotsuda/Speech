@@ -66,7 +66,7 @@ namespace Speech.OpenAI
             }
 
             var language = Language ?? config.Common?.Language ?? System.Globalization.CultureInfo.CurrentCulture.Name;
-            var model = Model ?? "whisper-1";
+            var model = Model ?? config.OpenAI?.STTModel ?? "whisper-1";
 
             try
             {
