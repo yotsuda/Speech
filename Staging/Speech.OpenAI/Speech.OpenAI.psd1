@@ -9,6 +9,8 @@
 
     RequiredModules = @('Speech.Core')
 
+    FormatsToProcess = @('Speech.OpenAI.format.ps1xml')
+
     CmdletsToExport = @(
         'Out-OpenAISpeech',
         'Get-OpenAISpeech',

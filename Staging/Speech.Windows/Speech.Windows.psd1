@@ -9,6 +9,8 @@
 
     RequiredModules = @('Speech.Core')
 
+    FormatsToProcess = @('Speech.Windows.format.ps1xml')
+
     CmdletsToExport = @(
         'Out-WindowsSpeech',
         'Get-WindowsSpeech',

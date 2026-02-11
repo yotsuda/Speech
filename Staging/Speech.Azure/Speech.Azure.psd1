@@ -9,6 +9,8 @@
 
     RequiredModules = @('Speech.Core')
 
+    FormatsToProcess = @('Speech.Azure.format.ps1xml')
+
     CmdletsToExport = @(
         'Out-AzureSpeech',
         'Get-AzureSpeech',

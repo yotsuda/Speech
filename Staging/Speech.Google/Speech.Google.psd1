@@ -9,6 +9,8 @@
 
     RequiredModules = @('Speech.Core')
 
+    FormatsToProcess = @('Speech.Google.format.ps1xml')
+
     CmdletsToExport = @(
         'Out-GoogleSpeech',
         'Read-GoogleSpeech',

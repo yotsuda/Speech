@@ -49,6 +49,7 @@ namespace Speech.Google
                 foreach (var voice in voices)
                 {
                     var obj = new PSObject();
+                    obj.TypeNames.Insert(0, "Speech.Google.GoogleSpeechInfo");
                     obj.Properties.Add(new PSNoteProperty("Name", voice.Name));
                     obj.Properties.Add(new PSNoteProperty("Gender", voice.Gender));
                     obj.Properties.Add(new PSNoteProperty("Languages", string.Join(", ", voice.LanguageCodes)));

@@ -44,6 +44,7 @@ Remove-And-Create $target
 
 Copy-Item Staging\Speech.Windows\Speech.Windows.dll $target
 Copy-Item Staging\Speech.Windows\Speech.Windows.psd1 $target
+Copy-Item Staging\Speech.Windows\Speech.Windows.format.ps1xml $target
 
 $count = (Get-ChildItem $target -File).Count
 Write-Host "  -> $count files" -ForegroundColor Green
@@ -55,6 +56,7 @@ Remove-And-Create $target
 
 Copy-Item Staging\Speech.Azure\Speech.Azure.dll $target
 Copy-Item Staging\Speech.Azure\Speech.Azure.psd1 $target
+Copy-Item Staging\Speech.Azure\Speech.Azure.format.ps1xml $target
 # Azure SDK managed DLL
 Copy-Item Staging\Speech.Azure\Microsoft.CognitiveServices.Speech.csharp.dll $target
 # Windows x64 native libs only
@@ -72,6 +74,7 @@ Remove-And-Create $target
 
 Copy-Item Staging\Speech.OpenAI\Speech.OpenAI.dll $target
 Copy-Item Staging\Speech.OpenAI\Speech.OpenAI.psd1 $target
+Copy-Item Staging\Speech.OpenAI\Speech.OpenAI.format.ps1xml $target
 
 $count = (Get-ChildItem $target -File).Count
 Write-Host "  -> $count files" -ForegroundColor Green
@@ -83,6 +86,7 @@ Remove-And-Create $target
 
 Copy-Item Staging\Speech.Google\Speech.Google.dll $target
 Copy-Item Staging\Speech.Google\Speech.Google.psd1 $target
+Copy-Item Staging\Speech.Google\Speech.Google.format.ps1xml $target
 
 $count = (Get-ChildItem $target -File).Count
 Write-Host "  -> $count files" -ForegroundColor Green
