@@ -11,6 +11,7 @@ namespace Speech.Google
     public class GetGoogleSpeechCmdlet : PSCmdlet
     {
         [Parameter]
+        [ArgumentCompleter(typeof(GoogleLanguageCompleter))]
         public string? Language { get; set; }
 
         [Parameter]

@@ -29,6 +29,7 @@ namespace Speech.Windows
         public int EndSilenceSeconds { get; set; } = 3;
 
         [Parameter]
+        [ArgumentCompleter(typeof(WindowsCultureCompleter))]
         public string Language { get; set; } = System.Globalization.CultureInfo.CurrentCulture.Name;
 
         [Parameter]

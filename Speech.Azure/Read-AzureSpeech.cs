@@ -20,6 +20,7 @@ namespace Speech.Azure
     public class ReadAzureVoiceCmdlet : AzureCmdlet
     {
         [Parameter]
+        [ArgumentCompleter(typeof(AzureLanguageCompleter))]
         public string Language { get; set; } = System.Globalization.CultureInfo.CurrentCulture.Name;
 
         [Parameter]

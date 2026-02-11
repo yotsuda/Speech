@@ -7,6 +7,7 @@ namespace Speech.Windows
     public class GetWindowsVoiceCmdlet : WindowsCmdlet
     {
         [Parameter]
+        [ArgumentCompleter(typeof(WindowsCultureCompleter))]
         public string? Culture { get; set; }
 
         protected override void ProcessRecord()

@@ -13,6 +13,7 @@ namespace Speech.OpenAI
         public string? ApiKey { get; set; }
 
         [Parameter]
+        [ArgumentCompleter(typeof(OpenAILanguageCompleter))]
         public string Language { get; set; } = System.Globalization.CultureInfo.CurrentCulture.Name;
 
         [Parameter]
