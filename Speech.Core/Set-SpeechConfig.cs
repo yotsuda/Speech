@@ -47,12 +47,15 @@ namespace Speech.Core
         public string? OpenAIKey { get; set; }
 
         [Parameter]
+        [ArgumentCompleter(typeof(OpenAIVoiceCompleter))]
         public string? OpenAIVoice { get; set; }
 
         [Parameter]
+        [ArgumentCompleter(typeof(OpenAITTSModelCompleter))]
         public string? OpenAIModel { get; set; }
 
         [Parameter]
+        [ArgumentCompleter(typeof(OpenAISTTModelCompleter))]
         public string? OpenAISTTModel { get; set; }
 
         [Parameter]

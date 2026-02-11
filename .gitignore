@@ -32,6 +32,12 @@ Staging/
 work_procedure.md
 work_progress.md
 
+# Credentials
+Speech.Google/*.json
+
+# Temporary staging
+TempStaging/
+
 # Development files
 IMPLEMENTATION*.md
 Test-*.ps1
