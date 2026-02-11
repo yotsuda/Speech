@@ -17,6 +17,10 @@ namespace Speech.OpenAI
         public string Language { get; set; } = System.Globalization.CultureInfo.CurrentCulture.Name;
 
         [Parameter]
+        [ArgumentCompleter(typeof(OpenAIModelCompleter))]
+        public string? Model { get; set; }
+
+        [Parameter]
         [ArgumentCompleter(typeof(MicrophoneCompleter))]
         public string? Microphone { get; set; }
 
@@ -62,6 +66,7 @@ namespace Speech.OpenAI
             }
 
             var language = Language ?? config.Common?.Language ?? System.Globalization.CultureInfo.CurrentCulture.Name;
+            var model = Model ?? "whisper-1";
 
             try
             {
@@ -82,7 +87,7 @@ namespace Speech.OpenAI
                 Console.Write("\r> Transcribing... ");
                 
                 using var manager = new OpenAIAudioManager(apiKey);
-                var text = manager.SpeechToTextAsync(audioData, "audio.wav", "whisper-1", language)
+                var text = manager.SpeechToTextAsync(audioData, "audio.wav", model, language)
                     .GetAwaiter().GetResult();
 
                 // Clear the "Transcribing..." line

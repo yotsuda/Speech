@@ -11,12 +11,11 @@ namespace Speech.OpenAI
         public string? Text { get; set; }
 
         [Parameter]
-        [ValidateSet("alloy", "ash", "ballad", "coral", "echo", "fable",
-                     "onyx", "nova", "sage", "shimmer", "verse")]
+        [ArgumentCompleter(typeof(OpenAIVoiceCompleter))]
         public string? Voice { get; set; }
 
         [Parameter]
-        [ValidateSet("tts-1", "tts-1-hd", "gpt-4o-mini-tts")]
+        [ArgumentCompleter(typeof(OpenAIModelCompleter))]
         public string? Model { get; set; }
 
         [Parameter]
