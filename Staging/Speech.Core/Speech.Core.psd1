@@ -17,7 +17,8 @@
     CmdletsToExport = @(
         'Get-SpeechConfig',
         'Set-SpeechConfig',
-        'Get-Microphone'
+        'Get-Microphone',
+        'Test-Microphone'
     )
 
     FunctionsToExport = @()

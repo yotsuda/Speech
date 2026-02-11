@@ -14,8 +14,7 @@
     CmdletsToExport = @(
         'Out-WindowsSpeech',
         'Get-WindowsSpeech',
-        'Read-WindowsSpeech',
-        'Test-Microphone'
+        'Read-WindowsSpeech'
     )
 
     FunctionsToExport = @()
