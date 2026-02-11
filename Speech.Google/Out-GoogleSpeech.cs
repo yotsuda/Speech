@@ -13,9 +13,11 @@ namespace Speech.Google
         public string Text { get; set; } = "";
 
         [Parameter]
+        [ArgumentCompleter(typeof(GoogleSpeechCompleter))]
         public string? Voice { get; set; }
 
         [Parameter]
+        [ArgumentCompleter(typeof(GoogleLanguageCompleter))]
         public string? Language { get; set; }
 
         [Parameter]
@@ -28,6 +30,10 @@ namespace Speech.Google
 
         [Parameter]
         public string? Credential { get; set; }
+
+        [Parameter]
+        [ArgumentCompleter(typeof(OutputDeviceCompleter))]
+        public string? OutputDevice { get; set; }
 
         private string? _credentialPath;
         private string? _voice;
@@ -85,7 +91,9 @@ namespace Speech.Google
             {
                 using var manager = new GoogleAudioManager(_credentialPath!);
                 var audioData = manager.TextToSpeechAsync(Text, _voice!, _language!, Rate, Pitch).GetAwaiter().GetResult();
-                PlayMp3Audio(audioData);
+                var outputDeviceName = ConfigManager.GetOutputDevice(OutputDevice);
+                var deviceNumber = OutputDeviceCompleter.FindOutputDeviceIndex(outputDeviceName) ?? -1;
+                PlayMp3Audio(audioData, deviceNumber);
             }
             catch (Exception ex)
             {
@@ -93,11 +101,12 @@ namespace Speech.Google
             }
         }
 
-        private void PlayMp3Audio(byte[] audioData)
+        private void PlayMp3Audio(byte[] audioData, int deviceNumber = -1)
         {
             using var ms = new MemoryStream(audioData);
             using var reader = new Mp3FileReader(ms);
             using var waveOut = new WaveOutEvent();
+            waveOut.DeviceNumber = deviceNumber;
             waveOut.Init(reader);
             waveOut.Play();
             while (waveOut.PlaybackState == PlaybackState.Playing)

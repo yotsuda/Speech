@@ -306,6 +306,36 @@ namespace Speech.Core
         }
 
         /// <summary>
+        /// Gets output device name from parameter or config
+        /// </summary>
+        public static string? GetOutputDevice(string? parameterValue)
+        {
+            if (parameterValue != null)
+                return parameterValue;
+
+            var config = GetConfig();
+            return config.Common?.OutputDevice;
+        }
+
+        /// <summary>
+        /// Updates output device setting if parameter was specified
+        /// </summary>
+        public static bool UpdateOutputDeviceIfSpecified(string? parameterValue)
+        {
+            if (parameterValue == null)
+                return false;
+
+            var config = GetConfig();
+            if (config.Common?.OutputDevice == parameterValue)
+                return false;
+
+            config.Common ??= new CommonConfig();
+            config.Common.OutputDevice = parameterValue;
+            SaveConfig(config);
+            return true;
+        }
+
+        /// <summary>
         /// Gets microphone value from parameter or config
         /// </summary>
         public static string? GetMicrophone(string? parameterValue)
@@ -602,6 +632,7 @@ namespace Speech.Core
         public int? Volume { get; set; }
         public string? Microphone { get; set; }
         public string? Language { get; set; }
+        public string? OutputDevice { get; set; }
     }
 
     public class WindowsConfig

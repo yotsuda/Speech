@@ -29,6 +29,10 @@ namespace Speech.Azure
         [ValidateRange(-50, 50)]
         public int? Pitch { get; set; }
 
+        [Parameter]
+        [ArgumentCompleter(typeof(OutputDeviceCompleter))]
+        public string? OutputDevice { get; set; }
+
         protected override void ProcessRecord()
         {
             try
@@ -40,7 +44,10 @@ namespace Speech.Azure
                 var volume = Volume ?? config.Common?.Volume ?? 100;
                 var pitch = Pitch ?? config.Azure?.Pitch ?? 0;
 
-                var task = SynthesizeSpeechAsync(voice, rate, volume, pitch);
+                var outputDeviceName = ConfigManager.GetOutputDevice(OutputDevice);
+                var deviceNumber = OutputDeviceCompleter.FindOutputDeviceIndex(outputDeviceName) ?? -1;
+
+                var task = SynthesizeSpeechAsync(voice, rate, volume, pitch, deviceNumber);
                 task.GetAwaiter().GetResult();
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("Invalid audio format") || ex.Message.Contains("empty audio data"))
@@ -122,11 +129,11 @@ namespace Speech.Azure
             return "en-US-JennyNeural";
         }
 
-        private async Task SynthesizeSpeechAsync(string voice, double rate, int volume, int pitch)
+        private async Task SynthesizeSpeechAsync(string voice, double rate, int volume, int pitch, int deviceNumber = -1)
         {
             var manager = AzureAudioManager.GetInstance(Key!, Region!);
             var ssml = BuildSsml(Text!, voice, rate, volume, pitch);
-            await manager.SynthesizeSpeechAsync(ssml);
+            await manager.SynthesizeSpeechAsync(ssml, deviceNumber);
         }
 
         private string BuildSsml(string text, string voice, double rate, int volume, int pitch)

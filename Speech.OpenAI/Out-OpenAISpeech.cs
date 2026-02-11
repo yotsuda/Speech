@@ -26,6 +26,10 @@ namespace Speech.OpenAI
         [Parameter]
         public string? ApiKey { get; set; }
 
+        [Parameter]
+        [ArgumentCompleter(typeof(OutputDeviceCompleter))]
+        public string? OutputDevice { get; set; }
+
         protected override void ProcessRecord()
         {
             if (string.IsNullOrWhiteSpace(Text))
@@ -54,9 +58,13 @@ namespace Speech.OpenAI
                 var audioBytes = manager.TextToSpeechAsync(Text, voice, model, speed)
                     .GetAwaiter().GetResult();
 
+                var outputDeviceName = ConfigManager.GetOutputDevice(OutputDevice);
+                var deviceNumber = OutputDeviceCompleter.FindOutputDeviceIndex(outputDeviceName) ?? -1;
+
                 using var ms = new MemoryStream(audioBytes);
                 using var mp3Reader = new Mp3FileReader(ms);
                 using var waveOut = new WaveOutEvent();
+                waveOut.DeviceNumber = deviceNumber;
                 waveOut.Init(mp3Reader);
                 waveOut.Play();
 

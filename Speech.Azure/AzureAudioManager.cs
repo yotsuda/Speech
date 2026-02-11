@@ -45,7 +45,7 @@ namespace Speech.Azure
         /// <summary>
         /// Synthesize speech from SSML using Azure TTS API
         /// </summary>
-        public async Task SynthesizeSpeechAsync(string ssml)
+        public async Task SynthesizeSpeechAsync(string ssml, int deviceNumber = -1)
         {
             var endpoint = $"https://{_region}.tts.speech.microsoft.com/cognitiveservices/v1";
 
@@ -87,8 +87,8 @@ namespace Speech.Azure
 
             var audioData = await response.Content.ReadAsByteArrayAsync();
 
-            // Play audio using Windows Media Player or write to temp file
-            await PlayAudioAsync(audioData);
+            // Play audio using NAudio
+            await PlayAudioAsync(audioData, deviceNumber);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Speech.Azure
             return voices ?? new List<AzureSpeechInfo>();
         }
 
-        private async Task PlayAudioAsync(byte[] audioData)
+        private async Task PlayAudioAsync(byte[] audioData, int deviceNumber = -1)
         {
             // Validate audio data before attempting playback
             if (audioData == null || audioData.Length == 0)
@@ -146,6 +146,7 @@ namespace Speech.Azure
                     using (var reader = new NAudio.Wave.Mp3FileReader(ms))
                     using (var waveOut = new NAudio.Wave.WaveOutEvent())
                     {
+                        waveOut.DeviceNumber = deviceNumber;
                         waveOut.Init(reader);
                         waveOut.Play();
 

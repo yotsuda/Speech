@@ -21,6 +21,10 @@ namespace Speech.Core
         public string? Microphone { get; set; }
 
         [Parameter]
+        [ArgumentCompleter(typeof(OutputDeviceCompleter))]
+        public string? OutputDevice { get; set; }
+
+        [Parameter]
         public string? Language { get; set; }
 
         [Parameter]
@@ -80,6 +84,13 @@ namespace Speech.Core
             {
                 ConfigManager.UpdateMicrophoneIfSpecified(Microphone);
                 WriteVerbose($"Microphone set to: {Microphone}");
+                updated = true;
+            }
+
+            if (!string.IsNullOrEmpty(OutputDevice))
+            {
+                ConfigManager.UpdateOutputDeviceIfSpecified(OutputDevice);
+                WriteVerbose($"OutputDevice set to: {OutputDevice}");
                 updated = true;
             }
 
@@ -176,7 +187,7 @@ namespace Speech.Core
             }
             else
             {
-                WriteWarning("No parameters specified. Use -Rate, -Volume, -Language, -WindowsVoice, -AzureVoice, -AzurePitch, -AzureKey, -AzureRegion, -OpenAIKey, -OpenAIVoice, -OpenAIModel, -GoogleCredential, or -GoogleVoice.");
+                WriteWarning("No parameters specified. Use -Rate, -Volume, -OutputDevice, -Language, -WindowsVoice, -AzureVoice, -AzurePitch, -AzureKey, -AzureRegion, -OpenAIKey, -OpenAIVoice, -OpenAIModel, -GoogleCredential, or -GoogleVoice.");
             }
         }
     }

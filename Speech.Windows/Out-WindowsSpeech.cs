@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Language;
+using NAudio.Wave;
 using Speech.Core;
 
 namespace Speech.Windows
@@ -25,6 +27,10 @@ namespace Speech.Windows
         [Parameter]
         [ValidateRange(0, 100)]
         public int? Volume { get; set; }
+
+        [Parameter]
+        [ArgumentCompleter(typeof(OutputDeviceCompleter))]
+        public string? OutputDevice { get; set; }
 
         internal class VoiceCompleter : IArgumentCompleter
         {
@@ -104,9 +110,35 @@ namespace Speech.Windows
                 synthesizer.Rate = ConvertToWindowsRate(rate);
                 synthesizer.Volume = volume;
 
-                // Speak
-                synthesizer.Speak(Text);
+                // Resolve output device
+                var outputDeviceName = ConfigManager.GetOutputDevice(OutputDevice);
+                var deviceNumber = OutputDeviceCompleter.FindOutputDeviceIndex(outputDeviceName) ?? -1;
 
+                if (deviceNumber >= 0)
+                {
+                    // Device specified: synthesize to WAV stream, then play via NAudio on specific device
+                    using var wavStream = new MemoryStream();
+                    synthesizer.SetOutputToWaveStream(wavStream);
+                    synthesizer.Speak(Text);
+                    synthesizer.SetOutputToDefaultAudioDevice();
+
+                    wavStream.Position = 0;
+                    using var waveReader = new WaveFileReader(wavStream);
+                    using var waveOut = new WaveOutEvent();
+                    waveOut.DeviceNumber = deviceNumber;
+                    waveOut.Init(waveReader);
+                    waveOut.Play();
+                    while (waveOut.PlaybackState == PlaybackState.Playing)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                    }
+                }
+                else
+                {
+                    // Default device: direct playback for best performance
+                    synthesizer.SetOutputToDefaultAudioDevice();
+                    synthesizer.Speak(Text);
+                }
             }
             catch (Exception ex)
             {

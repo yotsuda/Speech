@@ -54,6 +54,7 @@ namespace Speech.Core
             sb.AppendLine($"  Volume     : {config.Common?.Volume?.ToString() ?? "(not set)"}");
             sb.AppendLine($"  Language   : {config.Common?.Language ?? "(not set)"}");
             sb.AppendLine($"  Microphone : {config.Common?.Microphone ?? "(not set)"}");
+            sb.AppendLine($"  OutputDevice : {(string.IsNullOrEmpty(config.Common?.OutputDevice) ? "(not set)" : config.Common.OutputDevice)}");
 
             // Windows settings (only if Speech.Windows is installed)
             if (windowsInstalled)
