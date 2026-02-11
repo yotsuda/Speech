@@ -14,7 +14,8 @@
     CmdletsToExport = @(
         'Out-WindowsSpeech',
         'Get-WindowsSpeech',
-        'Read-WindowsSpeech'
+        'Read-WindowsSpeech',
+        'Set-WindowsSpeechConfig'
     )
 
     FunctionsToExport = @()

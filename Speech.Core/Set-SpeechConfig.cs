@@ -3,7 +3,8 @@ using System.Management.Automation;
 namespace Speech.Core
 {
     /// <summary>
-    /// Set voice configuration settings
+    /// Set common speech configuration settings.
+    /// For provider-specific settings, use Set-AzureSpeechConfig, Set-OpenAISpeechConfig, etc.
     /// </summary>
     [Cmdlet(VerbsCommon.Set, "SpeechConfig")]
     public class SetSpeechConfigCmdlet : PSCmdlet
@@ -27,48 +28,10 @@ namespace Speech.Core
         [Parameter]
         public string? Language { get; set; }
 
-        [Parameter]
-        public string? WindowsVoice { get; set; }
-
-        [Parameter]
-        public string? AzureVoice { get; set; }
-
-        [Parameter]
-        [ValidateRange(-50, 50)]
-        public int? AzurePitch { get; set; }
-
-        [Parameter]
-        public string? AzureKey { get; set; }
-
-        [Parameter]
-        public string? AzureRegion { get; set; }
-
-        [Parameter]
-        public string? OpenAIKey { get; set; }
-
-        [Parameter]
-        [ArgumentCompleter(typeof(OpenAIVoiceCompleter))]
-        public string? OpenAIVoice { get; set; }
-
-        [Parameter]
-        [ArgumentCompleter(typeof(OpenAITTSModelCompleter))]
-        public string? OpenAIModel { get; set; }
-
-        [Parameter]
-        [ArgumentCompleter(typeof(OpenAISTTModelCompleter))]
-        public string? OpenAISTTModel { get; set; }
-
-        [Parameter]
-        public string? GoogleCredential { get; set; }
-
-        [Parameter]
-        public string? GoogleVoice { get; set; }
-
         protected override void ProcessRecord()
         {
             bool updated = false;
 
-            // Common settings
             if (Rate.HasValue)
             {
                 ConfigManager.UpdateRateIfSpecified(Rate);
@@ -103,92 +66,10 @@ namespace Speech.Core
                 WriteVerbose($"Language set to: {Language}");
                 updated = true;
 
-                // Warn about cleared conflicting voice settings
                 foreach (var cleared in clearedVoices)
                 {
                     WriteWarning($"Cleared {cleared} because it conflicts with Language '{Language}'.");
                 }
-            }
-
-            // Windows settings
-            if (!string.IsNullOrEmpty(WindowsVoice))
-            {
-                ConfigManager.UpdateWindowsVoiceIfSpecified(WindowsVoice);
-                WriteVerbose($"Windows voice set to: {WindowsVoice}");
-                updated = true;
-            }
-
-            // Azure settings
-            if (!string.IsNullOrEmpty(AzureVoice))
-            {
-                ConfigManager.UpdateAzureVoiceIfSpecified(AzureVoice);
-                WriteVerbose($"Azure voice set to: {AzureVoice}");
-                updated = true;
-            }
-
-            if (AzurePitch.HasValue)
-            {
-                ConfigManager.UpdateAzurePitchIfSpecified(AzurePitch);
-                WriteVerbose($"Azure pitch set to: {AzurePitch}");
-                updated = true;
-            }
-
-            if (!string.IsNullOrEmpty(AzureKey))
-            {
-                ConfigManager.UpdateAzureKeyIfSpecified(AzureKey);
-                WriteVerbose("Azure key updated");
-                updated = true;
-            }
-
-            if (!string.IsNullOrEmpty(AzureRegion))
-            {
-                ConfigManager.UpdateAzureRegionIfSpecified(AzureRegion);
-                WriteVerbose($"Azure region set to: {AzureRegion}");
-                updated = true;
-            }
-
-            // OpenAI settings
-            if (!string.IsNullOrEmpty(OpenAIKey))
-            {
-                ConfigManager.UpdateOpenAIKeyIfSpecified(OpenAIKey);
-                WriteVerbose("OpenAI key updated");
-                updated = true;
-            }
-
-            if (!string.IsNullOrEmpty(OpenAIVoice))
-            {
-                ConfigManager.UpdateOpenAIVoiceIfSpecified(OpenAIVoice);
-                WriteVerbose($"OpenAI voice set to: {OpenAIVoice}");
-                updated = true;
-            }
-
-            if (!string.IsNullOrEmpty(OpenAIModel))
-            {
-                ConfigManager.UpdateOpenAIModelIfSpecified(OpenAIModel);
-                WriteVerbose($"OpenAI TTS model set to: {OpenAIModel}");
-                updated = true;
-            }
-
-            if (!string.IsNullOrEmpty(OpenAISTTModel))
-            {
-                ConfigManager.UpdateOpenAISTTModelIfSpecified(OpenAISTTModel);
-                WriteVerbose($"OpenAI STT model set to: {OpenAISTTModel}");
-                updated = true;
-            }
-
-            // Google settings
-            if (!string.IsNullOrEmpty(GoogleCredential))
-            {
-                ConfigManager.UpdateGoogleCredentialIfSpecified(GoogleCredential);
-                WriteVerbose($"Google credential set to: {GoogleCredential}");
-                updated = true;
-            }
-
-            if (!string.IsNullOrEmpty(GoogleVoice))
-            {
-                ConfigManager.UpdateGoogleVoiceIfSpecified(GoogleVoice);
-                WriteVerbose($"Google voice set to: {GoogleVoice}");
-                updated = true;
             }
 
             if (updated)
@@ -197,7 +78,7 @@ namespace Speech.Core
             }
             else
             {
-                WriteWarning("No parameters specified. Use -Rate, -Volume, -OutputDevice, -Language, -WindowsVoice, -AzureVoice, -AzurePitch, -AzureKey, -AzureRegion, -OpenAIKey, -OpenAIVoice, -OpenAIModel, -OpenAISTTModel, -GoogleCredential, or -GoogleVoice.");
+                WriteWarning("No parameters specified. Use -Rate, -Volume, -OutputDevice, -Language, or -Microphone. For provider-specific settings, use Set-AzureSpeechConfig, Set-OpenAISpeechConfig, Set-GoogleSpeechConfig, or Set-WindowsSpeechConfig.");
             }
         }
     }

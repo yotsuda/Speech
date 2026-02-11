@@ -14,7 +14,8 @@
     CmdletsToExport = @(
         'Out-GoogleSpeech',
         'Read-GoogleSpeech',
-        'Get-GoogleSpeech'
+        'Get-GoogleSpeech',
+        'Set-GoogleSpeechConfig'
     )
 
     FunctionsToExport = @()

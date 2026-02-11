@@ -14,7 +14,8 @@
     CmdletsToExport = @(
         'Out-OpenAISpeech',
         'Get-OpenAISpeech',
-        'Read-OpenAISpeech'
+        'Read-OpenAISpeech',
+        'Set-OpenAISpeechConfig'
     )
 
     FunctionsToExport = @()

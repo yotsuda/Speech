@@ -14,7 +14,8 @@
     CmdletsToExport = @(
         'Out-AzureSpeech',
         'Get-AzureSpeech',
-        'Read-AzureSpeech'
+        'Read-AzureSpeech',
+        'Set-AzureSpeechConfig'
     )
 
     FunctionsToExport = @()
