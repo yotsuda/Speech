@@ -1,273 +1,207 @@
 # Speech
 
-A PowerShell module providing unified voice synthesis (TTS) and recognition (STT) across Windows Speech API and Azure Speech Services.
+PowerShell modules for text-to-speech (TTS) and speech-to-text (STT) across multiple providers.
 
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue)]() [![PowerShell](https://img.shields.io/badge/PowerShell-7.0+-blue)]()
+[![.NET 9.0](https://img.shields.io/badge/.NET-9.0-blue)]() [![PowerShell 7.0+](https://img.shields.io/badge/PowerShell-7.0+-blue)]() [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Features
+## Providers
 
-### 🔊 Text-to-Speech (TTS)
-- **Windows Speech API** - Built-in SAPI support
-- **Azure Speech Services** - Cloud-based neural voices
-- **Background Playback** - Queue-based async audio playback
+| Module | TTS | STT | Requires |
+|--------|-----|-----|----------|
+| **Speech.Windows** | Offline SAPI | Offline SAPI | Windows 10/11 |
+| **Speech.Azure** | 400+ neural voices | Real-time streaming | Azure Speech key |
+| **Speech.OpenAI** | 11 multilingual voices | Whisper (batch) | OpenAI API key |
+| **Speech.Google** | Standard/WaveNet/Neural2 | Batch | Google Cloud credential JSON |
+| **Speech.Core** | — | — | (shared config, microphone, output device) |
 
-### 🎤 Speech-to-Text (STT)
-- **Windows Speech Recognition** - Local speech recognition
-- **Azure Speech Services** - Cloud-based continuous recognition
-- **Enter to Stop** - Natural interaction (press Enter when done speaking)
+## Quick Start
 
-### ⚙️ Configuration
-- **Smart Defaults** - Automatic locale-based voice selection
-- **Persistent Config** - JSON-based settings storage
-- **Flexible Parameters** - Consistent rate/volume/voice controls
+```powershell
+# Windows — no setup needed
+Out-WindowsSpeech "Hello, world!"
+
+# Azure
+Set-AzureSpeechConfig -Key "your-key" -Region "eastus"
+Out-AzureSpeech "Hello" -Language en-US
+
+# OpenAI
+Set-OpenAISpeechConfig -Key "sk-..."
+Out-OpenAISpeech "Hello" -Voice nova
+
+# Google
+Set-GoogleSpeechConfig -Credential "path/to/key.json"
+Out-GoogleSpeech "Hello"
+
+# Speech recognition (all providers)
+$text = Read-WindowsSpeech
+$text = Read-AzureSpeech -Language ja-JP
+$text = Read-OpenAISpeech -Language ja
+$text = Read-GoogleSpeech -Language ja-JP
+```
 
 ## Installation
-
-### Prerequisites
-- Windows 10/11 (for Windows Speech API)
-- PowerShell 7.0 or higher
-- .NET 9.0 Runtime
-- Azure Speech Services subscription (optional, for Azure features)
 
 ### Build from Source
 
 ```powershell
-# Clone the repository
-git clone https://github.com/yourusername/Speech.git
+git clone https://github.com/yotsuda/Speech.git
 cd Speech
-
-# Build the project
-dotnet build Speech/Speech.csproj -c Release
-
-# Import the module
-Import-Module .\Speech\bin\Release\net9.0\Speech.psd1
+dotnet build Speech.sln -c Release
 ```
 
-## Quick Start
-
-### Text-to-Speech
+### Deploy
 
 ```powershell
-# Windows TTS
-Out-WindowsSpeech "Hello, world!"
-
-# Azure TTS with custom voice
-Out-AzureSpeech "こんにちは" -Voice "ja-JP-NanamiNeural" -Key $env:AZURE_SPEECH_KEY -Region "japaneast"
-
-# List available voices
-Get-WindowsSpeech
-Get-AzureSpeech -Key $env:AZURE_SPEECH_KEY -Region "japaneast"
+# Requires elevated PowerShell
+.\Deploy.ps1
 ```
 
-### Speech-to-Text
-
-```powershell
-# Windows STT (single recognition)
-$text = Read-WindowsSpeech
-
-# Azure STT (continuous recognition, press Enter to stop)
-$text = Read-AzureSpeech -Key $env:AZURE_SPEECH_KEY -Region "japaneast"
-```
-
-### Interactive Conversation Example
-
-```powershell
-while ($true) {
-    Out-WindowsSpeech "How can I help you?"
-    
-    $input = Read-WindowsSpeech -TimeoutSeconds 30
-    
-    if (-not $input) { continue }
-    
-    if ($input -match "exit|quit|goodbye") {
-        Out-WindowsSpeech "Goodbye!"
-        break
-    }
-    
-    # Process input...
-}
-```
-
-## Configuration
-
-Configuration is automatically saved to:
-- **Windows**: `Documents\PowerShell\Modules\Speech\VoiceConfig.json`
-
-### Example Configuration
-
-```json
-{
-  "Common": {
-    "Rate": 1.0,
-    "Volume": 100
-  },
-  "Windows": {
-    "Voice": "Microsoft Zira Desktop"
-  },
-  "Azure": {
-    "Key": "your-azure-key",
-    "Region": "japaneast",
-    "Voice": "ja-JP-NanamiNeural"
-  }
-}
-```
-
-### Manage Configuration
-
-```powershell
-# View current configuration
-Get-SpeechConfig
-
-# Update configuration
-Set-SpeechConfig -WindowsVoice "Microsoft David Desktop" -Rate 1.2
-```
+This publishes all 5 modules to `C:\Program Files\PowerShell\7\Modules` with help files.
 
 ## Cmdlet Reference
 
-### Windows Speech API
+Each provider has 4 cmdlets following a consistent pattern:
 
-#### `Out-WindowsSpeech`
-Synthesize speech using Windows SAPI.
+| Verb | Purpose | Example |
+|------|---------|---------|
+| `Out-*Speech` | Text-to-speech | `Out-AzureSpeech "Hello"` |
+| `Read-*Speech` | Speech-to-text | `$text = Read-AzureSpeech` |
+| `Get-*Speech` | List voices | `Get-AzureSpeech -Locale ja` |
+| `Set-*SpeechConfig` | Configure provider | `Set-AzureSpeechConfig -Voice "..."` |
+
+Plus shared cmdlets in Speech.Core: `Get-SpeechConfig`, `Set-SpeechConfig`, `Get-Microphone`, `Test-Microphone`.
+
+Use `Get-Help <cmdlet> -Full` for detailed documentation.
+
+<details>
+<summary>All 20 cmdlets</summary>
+
+**Speech.Core** — Shared configuration and audio devices
+- `Get-SpeechConfig` — Display current configuration (`-Path` for file location)
+- `Set-SpeechConfig` — Set common settings: `-Rate`, `-Volume`, `-Language`, `-Microphone`, `-OutputDevice`
+- `Get-Microphone` — List audio input devices
+- `Test-Microphone` — Test microphone input level
+
+**Speech.Azure** — Azure Cognitive Services
+- `Out-AzureSpeech` — TTS with SSML prosody (`-Rate`, `-Volume`, `-Pitch`, `-Language`, `-Voice`)
+- `Read-AzureSpeech` — Real-time streaming STT (`-Language`, `-Detailed`)
+- `Get-AzureSpeech` — List 400+ neural voices (`-Locale` to filter)
+- `Set-AzureSpeechConfig` — Set `-Key`, `-Region`, `-Voice`, `-Pitch`
+
+**Speech.OpenAI** — OpenAI Audio API
+- `Out-OpenAISpeech` — TTS with 11 voices (`-Voice`, `-Model`, `-Speed`)
+- `Read-OpenAISpeech` — Whisper batch STT (`-Language`, `-Model`)
+- `Get-OpenAISpeech` — List available voices
+- `Set-OpenAISpeechConfig` — Set `-Key`, `-Voice`, `-Model`, `-STTModel`
+
+**Speech.Google** — Google Cloud Speech
+- `Out-GoogleSpeech` — TTS with Standard/WaveNet/Neural2 (`-Voice`, `-Language`, `-Speed`)
+- `Read-GoogleSpeech` — Batch STT (`-Language`)
+- `Get-GoogleSpeech` — List available voices (`-Language` to filter)
+- `Set-GoogleSpeechConfig` — Set `-Voice`, `-Credential`
+
+**Speech.Windows** — Windows SAPI
+- `Out-WindowsSpeech` — Offline TTS (`-Voice`, `-Rate`, `-Volume`)
+- `Read-WindowsSpeech` — Offline STT (`-Language`, `-Confidence`, `-Detailed`)
+- `Get-WindowsSpeech` — List installed SAPI voices (`-Culture` to filter)
+- `Set-WindowsSpeechConfig` — Set `-Voice`
+
+</details>
+
+## Configuration
+
+Settings are stored in `~/.speech/config.json`. API keys are masked when displayed.
 
 ```powershell
-Out-WindowsSpeech [-Text] <string>
-    [-Voice <string>]
-    [-Rate <double>]   # 0.5 to 2.0
-    [-Volume <int>]    # 0 to 100
+Get-SpeechConfig          # View all settings
+Get-SpeechConfig -Path    # Get config file path
 ```
 
-#### `Get-WindowsSpeech`
-List available Windows voices.
-
-```powershell
-Get-WindowsSpeech
-```
-
-#### `Read-WindowsSpeech`
-Continuous speech recognition using Windows Speech API. Stops automatically after silence, or press Enter to stop immediately.
-
-```powershell
-Read-WindowsSpeech
-    [-InitialTimeoutSeconds <int>]  # Before speech, Default: 30
-    [-EndSilenceSeconds <int>]      # After speech, Default: 3
-    [-Language <string>]            # Default: "ja-JP"
-    [-Confidence <double>]          # 0.0 to 1.0, Default: 0.3
-    [-NoAutoStop]                   # Require Enter to stop
-    [-PassThru]                     # Return detailed results
-```
+<details>
+<summary>Provider setup</summary>
 
 ### Azure Speech Services
 
-#### `Out-AzureSpeech`
-Synthesize speech using Azure TTS.
-
 ```powershell
-Out-AzureSpeech [-Text] <string>
-    -Key <string>
-    -Region <string>
-    [-Voice <string>]
-    [-Rate <double>]   # 0.5 to 2.0
-    [-Volume <int>]    # 0 to 100
-    [-Pitch <int>]     # -50 to 50 Hz
+# Get key: Azure Portal > Create "Speech" resource > Keys and Endpoint
+# Free tier (F0): 0.5M chars TTS + 5h STT / month
+Set-AzureSpeechConfig -Key "your-key" -Region "eastus"
+Get-AzureSpeech -Locale ja | Format-Table ShortName, DisplayName, Gender
+Set-AzureSpeechConfig -Voice "ja-JP-NanamiNeural"
 ```
 
-#### `Get-AzureSpeech`
-List available Azure neural voices.
+### OpenAI
 
 ```powershell
-Get-AzureSpeech
-    -Key <string>
-    -Region <string>
-    [-Locale <string>]  # Filter by locale (e.g., "ja-JP")
+# Get key: https://platform.openai.com/api-keys
+Set-OpenAISpeechConfig -Key "sk-..."
+Set-OpenAISpeechConfig -Voice nova -Model tts-1
 ```
 
-#### `Read-AzureSpeech`
-Continuous speech recognition using Azure Speech Services. Stops automatically after silence, or press Enter to stop immediately.
+### Google Cloud
 
 ```powershell
-Read-AzureSpeech
-    -Key <string>
-    -Region <string>
-    [-Language <string>]            # Default: "ja-JP"
-    [-InitialTimeoutSeconds <int>]  # Before speech, Default: 30
-    [-EndSilenceSeconds <int>]      # After speech, Default: 3
-    [-NoAutoStop]                   # Require Enter to stop
-    [-PassThru]                     # Return detailed results
+# Get credential: Google Cloud Console > IAM > Service Accounts > Create key (JSON)
+Set-GoogleSpeechConfig -Credential "C:\path\to\service-account.json"
+Get-GoogleSpeech -Language ja-JP | Format-Table Name, Gender
+Set-GoogleSpeechConfig -Voice "ja-JP-Neural2-B"
 ```
 
-### Utilities
-
-#### `Get-SpeechConfig`
-Display current configuration.
+### Windows
 
 ```powershell
-Get-SpeechConfig
+# No API key needed. Add voices: Settings > Time & language > Speech
+Get-WindowsSpeech
+Set-WindowsSpeechConfig -Voice "Microsoft Haruka Desktop"
 ```
 
-#### `Set-SpeechConfig`
-Update configuration settings.
+</details>
+
+<details>
+<summary>Common options</summary>
+
+All `Out-*Speech` cmdlets accept pipeline input and share these patterns:
 
 ```powershell
-Set-SpeechConfig
-    [-WindowsVoice <string>]
-    [-AzureKey <string>]
-    [-AzureRegion <string>]
-    [-AzureVoice <string>]
-    [-Rate <double>]
-    [-Volume <int>]
+# Pipeline
+"Line 1", "Line 2" | Out-AzureSpeech
+
+# Output device selection (Tab completion available)
+Out-AzureSpeech "Hello" -OutputDevice "Speakers (Realtek)"
+Set-SpeechConfig -OutputDevice "Speakers (Realtek)"   # persist
+
+# Microphone selection
+Read-AzureSpeech -Microphone "Headset Microphone"
+Set-SpeechConfig -Microphone "Headset Microphone"     # persist
+
+# Parameter > config priority for all settings
+Out-AzureSpeech "Hello" -Key "temp-key" -Region "westus"  # one-time override
 ```
 
-#### `Get-SpeechQueueState`
-Get TTS queue status.
-
-```powershell
-Get-SpeechQueueState
-```
-
-#### `Clear-SpeechQueue`
-Clear pending TTS queue.
-
-```powershell
-Clear-SpeechQueue
-```
-
-#### `Test-Microphone`
-Test microphone input levels.
-
-```powershell
-Test-Microphone
-```
+</details>
 
 ## Troubleshooting
 
-### Windows Speech Recognition Not Working
-- Ensure Windows Speech Recognition is set up (Settings → Time & Language → Speech)
-- Check microphone permissions
-- Run `Test-Microphone` to verify input
+<details>
+<summary>Common issues</summary>
 
-### Azure TTS/STT Errors
-- Verify your subscription key and region
-- Check for language mismatch (e.g., Japanese text with English voice)
-- Ensure your Azure Speech Services subscription is active
+**"key not configured" / "credential not configured"**
+Run the provider's `Set-*Config` cmdlet. See `Get-Help Set-AzureSpeechConfig -Full`.
 
-### Module Loading Issues
-- Ensure .NET 9.0 runtime is installed
-- Try `Import-Module` with `-Force` flag
-- Check for DLL locking (restart PowerShell session)
+**No microphone input**
+```powershell
+Get-Microphone       # List devices
+Test-Microphone      # Check input level (> 30 = OK)
+```
+
+**Windows STT not recognizing language**
+Install language pack: Settings > Time & language > Language & region > Add language > "Speech" feature.
+
+
+</details>
 
 ## License
 
-This project uses the following third-party libraries:
-- **NAudio** - MIT License (see LICENSES/NAudio-LICENSE.txt)
-- **Microsoft.CognitiveServices.Speech** - Microsoft Software License
-- **System.Speech** - .NET Foundation
-- **System.Management.Automation** - MIT License
+[MIT](LICENSE)
 
-## Credits
-
-Developed with ❤️ by Yoshifumi Tsuda.
-
----
-
-**Version**: 0.3.0
-**Last Updated**: 2026-01-28
+Third-party: [NAudio](https://github.com/naudio/NAudio) (MIT), [Azure Speech SDK](https://github.com/Azure-Samples/cognitive-services-speech-sdk) (MIT).
