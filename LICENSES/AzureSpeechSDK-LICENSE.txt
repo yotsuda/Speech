@@ -1,0 +1,97 @@
+MICROSOFT SOFTWARE LICENSE TERMS
+MICROSOFT COGNITIVE SERVICES SPEECH SDK
+
+These license terms are an agreement between you and Microsoft Corporation
+(or one of its affiliates). They apply to the software named above and any
+Microsoft services or software updates (except to the extent such services
+or updates are accompanied by new or additional terms, in which case those
+different terms apply prospectively and do not alter your or Microsoft's
+rights relating to pre-updated software or services).
+
+IF YOU COMPLY WITH THESE LICENSE TERMS, YOU HAVE THE RIGHTS BELOW.
+
+1. INSTALLATION AND USE RIGHTS.
+   a. General. You may install and use any number of copies of the software
+      to develop and test your applications that integrate with Azure
+      Cognitive Services Speech Services.
+   b. Third Party Components. The software may include third party
+      components with separate legal notices or governed by other
+      agreements, as may be described in the notices file(s) accompanying
+      the software.
+
+2. DISTRIBUTABLE CODE.
+   a. Distribution Rights. You are permitted to distribute the software in
+      applications you develop if you comply with the terms below:
+      i.   You (or others on your behalf) must not remove or minimize the
+           impact of any notices included in the software;
+      ii.  Your license agreement for distribution must be consistent with
+           the terms of this agreement.
+   b. Distribution Restrictions. You must not:
+      i.   Use Microsoft's trademarks or trade dress in your application in
+           any way that suggests your application comes from or is endorsed
+           by Microsoft;
+      ii.  Modify or distribute the source code of any distributable code
+           so that any part of it becomes subject to any license that
+           requires that the distributable code, any other part of the
+           software, or any of Microsoft's other intellectual property be
+           disclosed or distributed in source code form, or that others
+           have the right to modify it.
+
+3. DATA.
+   The software may collect information about you and your use of the
+   software and send that to Microsoft. Microsoft may use this information
+   to provide services and improve Microsoft's products and services.
+
+4. SCOPE OF LICENSE.
+   The software is licensed, not sold. Microsoft reserves all other rights.
+   Unless applicable law gives you more rights despite this limitation, you
+   will not (and have no right to):
+   a. work around any technical limitations in the software that only allow
+      you to use it in certain ways;
+   b. reverse engineer, decompile or disassemble the software, or otherwise
+      attempt to derive the source code for the software;
+   c. remove, minimize, block, or modify any notices of Microsoft or its
+      suppliers in the software;
+   d. use the software in any way that is against the law or to create or
+      propagate malware;
+   e. share, publish, distribute, or lease the software, except as provided
+      in Section 2 above.
+
+5. EXPORT RESTRICTIONS.
+   You must comply with all domestic and international export laws and
+   regulations that apply to the software, which include restrictions on
+   destinations, end users, and end use.
+
+6. SUPPORT SERVICES.
+   Microsoft is not obligated under this agreement to provide any support
+   services for the software. Any support provided is "as is", "with all
+   faults", and without warranty of any kind.
+
+7. ENTIRE AGREEMENT.
+   This agreement, and any other terms Microsoft may provide for
+   supplements, updates, or third-party applications, is the entire
+   agreement for the software.
+
+8. APPLICABLE LAW AND PLACE TO RESOLVE DISPUTES.
+   If you acquired the software in the United States or Canada, the laws of
+   the state or province where you live (or, if a business, where your
+   principal place of business is located) govern the interpretation of this
+   agreement, claims for its breach, and all other claims (including
+   consumer protection, unfair competition, and tort claims), regardless of
+   conflict of laws principles.
+
+9. DISCLAIMER OF WARRANTY.
+   THE SOFTWARE IS LICENSED "AS IS." YOU BEAR THE RISK OF USING IT.
+   MICROSOFT GIVES NO EXPRESS WARRANTIES, GUARANTEES, OR CONDITIONS. TO THE
+   EXTENT PERMITTED UNDER APPLICABLE LAWS, MICROSOFT EXCLUDES ALL IMPLIED
+   WARRANTIES, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+   AND NON-INFRINGEMENT.
+
+10. LIMITATION ON AND EXCLUSION OF DAMAGES.
+    IF YOU HAVE ANY BASIS FOR RECOVERING DAMAGES DESPITE THE PRECEDING
+    DISCLAIMER OF WARRANTY, YOU CAN RECOVER FROM MICROSOFT AND ITS
+    SUPPLIERS ONLY DIRECT DAMAGES UP TO U.S. $5.00. YOU CANNOT RECOVER ANY
+    OTHER DAMAGES, INCLUDING CONSEQUENTIAL, LOST PROFITS, SPECIAL, INDIRECT,
+    OR INCIDENTAL DAMAGES.
+
+Source: https://aka.ms/csspeech/license

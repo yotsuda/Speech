@@ -29,8 +29,7 @@ Staging/
 !Staging/**/*.psm1
 
 # Work tracking
-work_procedure.md
-work_progress.md
+work*.md
 
 # Credentials
 Speech.Google/*.json

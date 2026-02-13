@@ -76,17 +76,20 @@ Remove-And-Create $target
 
 $azureFiles = @(
     'Speech.Azure.dll', 'Speech.Azure.psd1', 'Speech.Azure.format.ps1xml',
-    'Microsoft.CognitiveServices.Speech.csharp.dll'
+    'Speech.Azure.deps.json', 'THIRD-PARTY-NOTICES.txt',
+    'Microsoft.CognitiveServices.Speech.csharp.dll',
+    'Azure.Core.dll', 'Microsoft.Bcl.AsyncInterfaces.dll',
+    'System.ClientModel.dll', 'System.Memory.Data.dll',
+    'Newtonsoft.Json.dll', 'Microsoft.ApplicationInsights.dll'
 )
 foreach ($f in $azureFiles) {
     try { Copy-Item "Staging\Speech.Azure\$f" $target -Force }
     catch { Write-Warning "  Skipped $f (locked)" }
 }
-# Windows x64 native libs
-$nativeTarget = Join-Path $target 'runtimes\win-x64\native'
-New-Item -ItemType Directory -Path $nativeTarget -Force | Out-Null
-try { Copy-Item Staging\Speech.Azure\runtimes\win-x64\native\Microsoft.CognitiveServices.Speech*.dll $nativeTarget -Force }
-catch { Write-Warning "  Skipped native DLLs (locked)" }
+# Native libs (Windows runtimes only; cross-platform is planned for a future version)
+Get-ChildItem Staging\Speech.Azure\runtimes -Directory | Where-Object { $_.Name -like 'win*' } | ForEach-Object {
+    Copy-Item $_.FullName "$target\runtimes\$($_.Name)" -Recurse -Force
+}
 # Help XML
 New-Item -ItemType Directory -Path "$target\en-US" -Force | Out-Null; Copy-Item "Staging\Speech.Azure\en-US\*" "$target\en-US" -Force
 
@@ -123,9 +126,19 @@ New-Item -ItemType Directory -Path "$target\en-US" -Force | Out-Null; Copy-Item 
 $count = (Get-ChildItem $target -Recurse -File).Count
 Write-Host "  -> $count files" -ForegroundColor Green
 
+# === Speech (parent module) ===
+Write-Host "Deploying Speech..." -ForegroundColor Yellow
+$target = Join-Path $ModulePath 'Speech'
+Remove-And-Create $target
+
+Copy-Item "Staging\Speech\Speech.psd1" $target -Force
+
+$count = (Get-ChildItem $target -Recurse -File).Count
+Write-Host "  -> $count files" -ForegroundColor Green
+
 # === Summary ===
 Write-Host "`n=== Deployment Summary ===" -ForegroundColor Cyan
-foreach ($mod in @('Speech.Core', 'Speech.Windows', 'Speech.Azure', 'Speech.OpenAI', 'Speech.Google')) {
+foreach ($mod in @('Speech.Core', 'Speech.Windows', 'Speech.Azure', 'Speech.OpenAI', 'Speech.Google', 'Speech')) {
     $path = Join-Path $ModulePath $mod
     $files = Get-ChildItem $path -Recurse -File
     $size = ($files | Measure-Object -Property Length -Sum).Sum / 1MB
