@@ -96,7 +96,7 @@ namespace Speech.Google
             return rsa.SignData(dataBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
         }
 
-        private static string Base64UrlEncode(byte[] data)
+        internal static string Base64UrlEncode(byte[] data)
         {
             return Convert.ToBase64String(data)
                 .TrimEnd('=')

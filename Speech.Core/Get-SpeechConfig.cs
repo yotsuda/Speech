@@ -115,7 +115,7 @@ namespace Speech.Core
             }
         }
 
-        private static string MaskKey(string? key)
+        internal static string MaskKey(string? key)
         {
             if (string.IsNullOrEmpty(key))
                 return "(not set)";

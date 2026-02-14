@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Speech.Core\Speech.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Speech.Tests" />
+  </ItemGroup>
+
 </Project>

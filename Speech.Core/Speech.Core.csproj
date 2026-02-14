@@ -14,4 +14,8 @@
     <PackageReference Include="System.Management.Automation" Version="7.2.15" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Speech.Tests" />
+  </ItemGroup>
+
 </Project>

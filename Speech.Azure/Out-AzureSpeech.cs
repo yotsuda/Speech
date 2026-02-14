@@ -101,7 +101,7 @@ namespace Speech.Azure
         /// Resolves which voice to use based on -Voice, -Language, and config settings.
         /// Priority: -Voice > config.Azure.Voice > -Language > config.Common.Language > default
         /// </summary>
-        private string ResolveVoice(SpeechConfig config)
+        internal string ResolveVoice(SpeechConfig config)
         {
             // Priority 1: -Voice parameter explicitly specified
             if (!string.IsNullOrEmpty(Voice))
@@ -136,7 +136,7 @@ namespace Speech.Azure
             await manager.SynthesizeSpeechAsync(ssml, deviceNumber);
         }
 
-        private string BuildSsml(string text, string voice, double rate, int volume, int pitch)
+        internal string BuildSsml(string text, string voice, double rate, int volume, int pitch)
         {
             // Extract language from voice name (e.g., "ja-JP-NanamiNeural" -> "ja-JP")
             var lang = "en-US"; // default
@@ -172,7 +172,7 @@ namespace Speech.Azure
         /// <summary>
         /// Attempts to detect the language of the text
         /// </summary>
-        private string? DetectTextLanguage(string? text)
+        internal string? DetectTextLanguage(string? text)
         {
             if (string.IsNullOrEmpty(text))
                 return null;
