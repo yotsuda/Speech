@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speech.OpenAI", "Speech.Ope
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speech.Windows", "Speech.Windows\Speech.Windows.csproj", "{D4B75CDB-ABCA-47C4-9A46-06BB863C25D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speech.Tests", "Speech.Tests\Speech.Tests.csproj", "{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speech.IntegrationTests", "Speech.IntegrationTests\Speech.IntegrationTests.csproj", "{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +87,30 @@ Global
 		{D4B75CDB-ABCA-47C4-9A46-06BB863C25D0}.Release|x64.Build.0 = Release|Any CPU
 		{D4B75CDB-ABCA-47C4-9A46-06BB863C25D0}.Release|x86.ActiveCfg = Release|Any CPU
 		{D4B75CDB-ABCA-47C4-9A46-06BB863C25D0}.Release|x86.Build.0 = Release|Any CPU
+		{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}.Debug|x64.Build.0 = Debug|Any CPU
+		{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}.Debug|x86.Build.0 = Debug|Any CPU
+		{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}.Release|x64.ActiveCfg = Release|Any CPU
+		{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}.Release|x64.Build.0 = Release|Any CPU
+		{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}.Release|x86.ActiveCfg = Release|Any CPU
+		{B34E030B-E4A3-4FC5-B8A2-B41BD2A19BBA}.Release|x86.Build.0 = Release|Any CPU
+		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Debug|x64.Build.0 = Debug|Any CPU
+		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Debug|x86.Build.0 = Debug|Any CPU
+		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Release|Any CPU.Build.0 = Release|Any CPU
+		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Release|x64.ActiveCfg = Release|Any CPU
+		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Release|x64.Build.0 = Release|Any CPU
+		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Release|x86.ActiveCfg = Release|Any CPU
+		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

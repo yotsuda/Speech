@@ -1,5 +1,7 @@
 using System.Text;
 using System.Text.Json;
+using Microsoft.CognitiveServices.Speech;
+using Microsoft.CognitiveServices.Speech.Audio;
 
 namespace Speech.Azure
 {
@@ -43,9 +45,9 @@ namespace Speech.Azure
         }
 
         /// <summary>
-        /// Synthesize speech from SSML using Azure TTS API
+        /// Synthesize speech from SSML and return MP3 byte array (no playback)
         /// </summary>
-        public async Task SynthesizeSpeechAsync(string ssml, int deviceNumber = -1)
+        public async Task<byte[]> SynthesizeToByteArrayAsync(string ssml)
         {
             var endpoint = $"https://{_region}.tts.speech.microsoft.com/cognitiveservices/v1";
 
@@ -85,10 +87,45 @@ namespace Speech.Azure
                 throw new Exception(errorDetails);
             }
 
-            var audioData = await response.Content.ReadAsByteArrayAsync();
+            return await response.Content.ReadAsByteArrayAsync();
+        }
 
-            // Play audio using NAudio
+        /// <summary>
+        /// Synthesize speech from SSML using Azure TTS API and play it
+        /// </summary>
+        public async Task SynthesizeSpeechAsync(string ssml, int deviceNumber = -1)
+        {
+            var audioData = await SynthesizeToByteArrayAsync(ssml);
             await PlayAudioAsync(audioData, deviceNumber);
+        }
+
+        /// <summary>
+        /// Recognize speech from raw PCM audio data (16kHz/16bit/mono)
+        /// </summary>
+        public async Task<string> RecognizeFromBytesAsync(byte[] pcmAudioData, string language = "en-US")
+        {
+            if (pcmAudioData == null || pcmAudioData.Length == 0)
+                throw new ArgumentException("PCM audio data is empty.", nameof(pcmAudioData));
+
+            var speechConfig = SpeechConfig.FromSubscription(_key, _region);
+            speechConfig.SpeechRecognitionLanguage = language;
+
+            var audioFormat = AudioStreamFormat.GetWaveFormatPCM(16000, 16, 1);
+            using var pushStream = AudioInputStream.CreatePushStream(audioFormat);
+            pushStream.Write(pcmAudioData);
+            pushStream.Close();
+
+            using var audioConfig = AudioConfig.FromStreamInput(pushStream);
+            using var recognizer = new SpeechRecognizer(speechConfig, audioConfig);
+
+            var result = await recognizer.RecognizeOnceAsync();
+
+            return result.Reason switch
+            {
+                ResultReason.RecognizedSpeech => result.Text,
+                ResultReason.NoMatch => string.Empty,
+                _ => throw new Exception($"Azure STT error: {result.Reason}")
+            };
         }
 
         /// <summary>
