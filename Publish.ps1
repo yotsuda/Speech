@@ -11,6 +11,7 @@
 #   .\Publish.ps1 -Module Speech.Core # Publish a single module
 
 param(
+    [Parameter(Position=0)]
     [string]$ApiKey = $env:PSGALLERY_API_KEY,
     [string]$StagingPath = (Join-Path $PSScriptRoot 'Staging'),
     [string[]]$Module,
