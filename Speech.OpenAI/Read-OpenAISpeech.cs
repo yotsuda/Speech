@@ -154,7 +154,7 @@ namespace Speech.OpenAI
                     if (sample > maxAmplitude) maxAmplitude = sample;
                 }
 
-                if (maxAmplitude > 500)
+                if (maxAmplitude > 1500)
                 {
                     _hasSound = true;
                     _silenceStart = DateTime.MinValue;

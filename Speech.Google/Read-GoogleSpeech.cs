@@ -39,7 +39,7 @@ namespace Speech.Google
         private MemoryStream? _audioStream;
         private BinaryWriter? _audioWriter;
         private bool _hasSound;
-        private DateTime _lastSoundTime;
+        private DateTime _silenceStart = DateTime.MinValue;
         private bool _stopRequested;
         private string? _credentialPath;
         private string? _language;
@@ -118,7 +118,7 @@ namespace Speech.Google
             _audioWriter = new BinaryWriter(_audioStream);
             _hasSound = false;
             _stopRequested = false;
-            _lastSoundTime = DateTime.Now;
+            _silenceStart = DateTime.MinValue;
 
             _waveIn = new WaveInEvent
             {
@@ -155,9 +155,9 @@ namespace Speech.Google
                 }
 
                 // Check auto-stop condition
-                if (!NoAutoStop && _hasSound)
+                if (!NoAutoStop && _hasSound && _silenceStart != DateTime.MinValue)
                 {
-                    var silenceDuration = (DateTime.Now - _lastSoundTime).TotalSeconds;
+                    var silenceDuration = (DateTime.Now - _silenceStart).TotalSeconds;
                     if (silenceDuration >= EndSilenceSeconds)
                     {
                         break;
@@ -193,16 +193,22 @@ namespace Speech.Google
         {
             _audioWriter?.Write(e.Buffer, 0, e.BytesRecorded);
 
-            // Detect sound
+            // Detect sound using max amplitude of entire buffer
+            var maxAmplitude = 0;
             for (int i = 0; i < e.BytesRecorded; i += 2)
             {
-                short sample = BitConverter.ToInt16(e.Buffer, i);
-                if (Math.Abs(sample) > 500) // Threshold
-                {
-                    _hasSound = true;
-                    _lastSoundTime = DateTime.Now;
-                    break;
-                }
+                var sample = Math.Abs(BitConverter.ToInt16(e.Buffer, i));
+                if (sample > maxAmplitude) maxAmplitude = sample;
+            }
+
+            if (maxAmplitude > 1500)
+            {
+                _hasSound = true;
+                _silenceStart = DateTime.MinValue;
+            }
+            else if (_hasSound && _silenceStart == DateTime.MinValue)
+            {
+                _silenceStart = DateTime.Now;
             }
         }
     }
