@@ -19,6 +19,10 @@ Thumbs.db
 *.bak
 debug-*.xml
 memo.txt
+deploy-log.txt
+
+# Generated help (track .md only)
+*.dll-Help.xml
 
 # Large example files
 json_example.json
