@@ -99,7 +99,7 @@ namespace Speech.Azure
 
         /// <summary>
         /// Resolves which voice to use based on -Voice, -Language, and config settings.
-        /// Priority: -Voice > config.Azure.Voice > -Language > config.Common.Language > default
+        /// Priority: -Voice > -Language > config.Azure.Voice > config.Common.Language > default
         /// </summary>
         internal string ResolveVoice(SpeechConfig config)
         {
@@ -107,16 +107,16 @@ namespace Speech.Azure
             if (!string.IsNullOrEmpty(Voice))
                 return Voice;
 
-            // Priority 2: config.Azure.Voice is set
-            if (!string.IsNullOrEmpty(config.Azure?.Voice))
-                return config.Azure.Voice;
-
-            // Priority 3: -Language parameter specified
+            // Priority 2: -Language parameter specified (explicit parameter overrides config)
             if (!string.IsNullOrEmpty(Language))
             {
                 var normalizedLanguage = ConfigManager.NormalizeLanguage(Language);
                 return ConfigManager.GetDefaultVoiceForLanguage(normalizedLanguage);
             }
+
+            // Priority 3: config.Azure.Voice is set
+            if (!string.IsNullOrEmpty(config.Azure?.Voice))
+                return config.Azure.Voice;
 
             // Priority 4: config.Common.Language is set
             if (!string.IsNullOrEmpty(config.Common?.Language))
