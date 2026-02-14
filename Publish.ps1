@@ -2,18 +2,18 @@
 # Publishes all 6 modules in correct dependency order.
 #
 # Prerequisites:
-#   1. Run Deploy.ps1 first to build and stage all modules
+#   1. Run Deploy.ps1 first to build and deploy all modules
 #   2. Set $env:PSGALLERY_API_KEY or pass -ApiKey
 #
 # Usage:
-#   .\Publish.ps1 -ApiKey "your-key"
+#   .\Publish.ps1 "your-key"
 #   .\Publish.ps1 -WhatIf            # Dry run: validate only, do not publish
 #   .\Publish.ps1 -Module Speech.Core # Publish a single module
 
 param(
     [Parameter(Position=0)]
     [string]$ApiKey = $env:PSGALLERY_API_KEY,
-    [string]$StagingPath = (Join-Path $PSScriptRoot 'Staging'),
+    [string]$ModulePath = 'C:\Program Files\PowerShell\7\Modules',
     [string[]]$Module,
     [switch]$WhatIf
 )
@@ -47,18 +47,18 @@ if (-not $WhatIf -and [string]::IsNullOrEmpty($ApiKey)) {
 }
 
 Write-Host "=== PSGallery Publication ===" -ForegroundColor Cyan
-Write-Host "Staging: $StagingPath" -ForegroundColor Gray
+Write-Host "Source: $ModulePath" -ForegroundColor Gray
 Write-Host "Modules: $($modulesToPublish -join ', ')" -ForegroundColor Gray
 Write-Host ""
 
-# --- Prepare publish directories (trimmed copies of Staging) ---
-$publishRoot = Join-Path $StagingPath 'TempPublish'
+# --- Prepare publish directories (trimmed copies for size control) ---
+$publishRoot = Join-Path $PSScriptRoot 'TempPublish'
 if (Test-Path $publishRoot) { Remove-Item $publishRoot -Recurse -Force }
 
 foreach ($mod in $modulesToPublish) {
-    $src = Join-Path $StagingPath $mod
+    $src = Join-Path $ModulePath $mod
     if (-not (Test-Path $src)) {
-        throw "Staging directory not found: $src`nRun Deploy.ps1 first."
+        throw "Module directory not found: $src`nRun Deploy.ps1 first."
     }
 
     $dest = Join-Path $publishRoot $mod
@@ -96,25 +96,9 @@ foreach ($mod in $modulesToPublish) {
             Copy-Item "$helpSrc\*" "$dest\en-US" -Force
         }
     }
-    elseif ($mod -eq 'Speech.Core') {
-        # Core: DLL + NAudio + manifest + notices
-        foreach ($f in @("$mod.dll", "$mod.psd1", 'NAudio.dll', 'NAudio.Core.dll', 'NAudio.Wasapi.dll', 'NAudio.WinMM.dll')) {
-            Copy-Item "$src\$f" $dest -Force
-        }
-        Copy-Item "LICENSES\Speech.Core-THIRD-PARTY-NOTICES.txt" "$dest\THIRD-PARTY-NOTICES.txt" -Force
-        # Help XML
-        $helpSrc = Join-Path $src 'en-US'
-        if (Test-Path $helpSrc) {
-            New-Item -ItemType Directory -Path "$dest\en-US" -Force | Out-Null
-            Copy-Item "$helpSrc\*" "$dest\en-US" -Force
-        }
-    }
     else {
-        # Windows, OpenAI, Google: DLL + manifest + format + help
-        foreach ($f in @("$mod.dll", "$mod.psd1", "$mod.format.ps1xml")) {
-            $filePath = Join-Path $src $f
-            if (Test-Path $filePath) { Copy-Item $filePath $dest -Force }
-        }
+        # Core, Windows, OpenAI, Google: copy all files
+        Get-ChildItem $src -File | Copy-Item -Destination $dest -Force
         # Help XML
         $helpSrc = Join-Path $src 'en-US'
         if (Test-Path $helpSrc) {
