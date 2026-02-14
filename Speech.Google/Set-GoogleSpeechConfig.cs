@@ -26,8 +26,14 @@ namespace Speech.Google
 
             if (!string.IsNullOrEmpty(Credential))
             {
-                ConfigManager.UpdateGoogleCredentialIfSpecified(Credential);
-                WriteVerbose($"Google credential set to: {Credential}");
+                var resolvedPath = GetUnresolvedProviderPathFromPSPath(Credential);
+                if (!System.IO.File.Exists(resolvedPath))
+                {
+                    WriteWarning($"Credential file not found: {resolvedPath}");
+                    WriteWarning("The path will be saved, but authentication will fail until the file exists.");
+                }
+                ConfigManager.UpdateGoogleCredentialIfSpecified(resolvedPath);
+                WriteVerbose($"Google credential set to: {resolvedPath}");
                 updated = true;
             }
 

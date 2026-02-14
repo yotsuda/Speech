@@ -33,6 +33,11 @@ work*.md
 
 # Credentials
 Speech.Google/*.json
+*.key
+*.pem
+*.p12
+*-credentials.json
+*service-account*.json
 
 # Temporary staging
 TempStaging/

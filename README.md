@@ -14,6 +14,16 @@ PowerShell modules for text-to-speech (TTS) and speech-to-text (STT) across mult
 | **Speech.Google** | Standard/WaveNet/Neural2 | Batch | Google Cloud credential JSON |
 | **Speech.Core** | — | — | (shared config, microphone, output device) |
 
+## Platform Support
+
+| Cmdlet | Windows | Linux/macOS |
+|--------|---------|-------------|
+| `Out-*Speech` (all providers) | Yes | Yes |
+| `Read-AzureSpeech` | Yes | Yes |
+| `Read-GoogleSpeech` | Yes | Yes |
+| `Read-WindowsSpeech` | Yes | No (SAPI) |
+| `Read-OpenAISpeech` | Yes | No (NAudio WinMM) |
+
 ## Quick Start
 
 ```powershell

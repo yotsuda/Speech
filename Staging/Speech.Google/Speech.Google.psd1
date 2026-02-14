@@ -1,7 +1,7 @@
 @{
     RootModule = 'Speech.Google.dll'
     ModuleVersion = '0.3.0'
-    GUID = 'c3d4e5f6-a7b8-4c5d-9e0f-1a2b3c4d5e6f'
+    GUID = '8ff05eb8-8376-4111-9d0f-e8e71568e842'
     Author = 'Yoshifumi Tsuda'
     Copyright = 'Copyright (c) 2026 Yoshifumi Tsuda. MIT License.'
     Description = 'Google Cloud Speech Services for Speech module - Text-to-Speech and Speech-to-Text'
