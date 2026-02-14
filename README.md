@@ -190,6 +190,39 @@ Out-AzureSpeech "Hello" -Key "temp-key" -Region "westus"  # one-time override
 
 </details>
 
+## Tab Completion
+
+Most parameters support <kbd>Tab</kbd> completion. Voice and language lists are fetched from each provider's API and cached for the session.
+
+| Parameter | Completion Source | Cmdlets |
+|-----------|------------------|---------|
+| `-Voice` | Installed SAPI voices | `Out-WindowsSpeech`, `Set-WindowsSpeechConfig` |
+| `-Voice` | Azure voice API (400+) | `Out-AzureSpeech`, `Set-AzureSpeechConfig` |
+| `-Voice` | OpenAI voice list | `Out-OpenAISpeech`, `Set-OpenAISpeechConfig` |
+| `-Voice` | Google voice API | `Out-GoogleSpeech`, `Set-GoogleSpeechConfig` |
+| `-Language` | Azure locales from API | `Out-AzureSpeech`, `Read-AzureSpeech` |
+| `-Language` | OpenAI language codes | `Read-OpenAISpeech` |
+| `-Language` | Google locales from API | `Out-GoogleSpeech`, `Read-GoogleSpeech`, `Get-GoogleSpeech` |
+| `-Culture` | Installed Windows cultures | `Get-WindowsSpeech`, `Read-WindowsSpeech` |
+| `-Model` | OpenAI TTS/STT models | `Out-OpenAISpeech`, `Read-OpenAISpeech`, `Set-OpenAISpeechConfig` |
+| `-Microphone` | System audio input devices | All `Read-*Speech`, `Set-SpeechConfig`, `Test-Microphone` |
+| `-OutputDevice` | System audio output devices | All `Out-*Speech`, `Set-SpeechConfig` |
+
+```powershell
+# Example: type -Voice then press Tab
+Out-AzureSpeech "Hello" -Voice <Tab>
+# → ja-JP-NanamiNeural, en-US-JennyNeural, ...
+
+Out-OpenAISpeech "Hello" -Voice <Tab>
+# → alloy, ash, ballad, coral, echo, fable, nova, onyx, sage, shimmer, verse
+
+Read-AzureSpeech -Language <Tab>
+# → en-US, ja-JP, zh-CN, ...
+
+Read-OpenAISpeech -Microphone <Tab>
+# → Headset Microphone, Microphone Array, ...
+```
+
 ## Troubleshooting
 
 <details>
