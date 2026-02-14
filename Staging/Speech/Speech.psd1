@@ -1,6 +1,7 @@
 @{
     ModuleVersion = '0.3.0'
-    GUID = 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d'
+    GUID = '144e10f2-4dae-4e60-95a4-fc5b5247e3de'
+    CompatiblePSEditions = @('Core')
     Author = 'Yoshifumi Tsuda'
     Copyright = 'Copyright (c) 2026 Yoshifumi Tsuda. MIT License.'
     Description = 'PowerShell module for speech synthesis and recognition - includes Windows, Azure, OpenAI, and Google speech services'
@@ -21,6 +22,7 @@
     PrivateData = @{
         PSData = @{
             Tags = @('Speech', 'TTS', 'STT', 'Recognition', 'Azure', 'Windows', 'OpenAI', 'Whisper', 'Google', 'Cloud')
+            IconUri = 'https://raw.githubusercontent.com/yotsuda/Speech/main/assets/icon.svg'
             LicenseUri = 'https://github.com/yotsuda/Speech/blob/main/LICENSE'
             ProjectUri = 'https://github.com/yotsuda/Speech'
             ReleaseNotes = 'v0.3.0 - Initial release. Unified speech module including Windows, Azure, OpenAI, and Google speech services.'

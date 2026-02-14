@@ -44,6 +44,8 @@ $coreFiles = @(
     'Speech.Core.dll', 'Speech.Core.psd1',
     'NAudio.dll', 'NAudio.Core.dll', 'NAudio.Wasapi.dll', 'NAudio.WinMM.dll'
 )
+# Copy THIRD-PARTY-NOTICES
+Copy-Item "LICENSES\Speech.Core-THIRD-PARTY-NOTICES.txt" "$target\THIRD-PARTY-NOTICES.txt" -Force
 foreach ($f in $coreFiles) {
     try { Copy-Item "Staging\Speech.Core\$f" $target -Force }
     catch { Write-Warning "  Skipped $f (locked)" }
