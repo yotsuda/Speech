@@ -6,7 +6,7 @@
     Author = 'Yoshifumi Tsuda'
     Copyright = 'Copyright (c) 2026 Yoshifumi Tsuda. MIT License.'
     Description = 'Google Cloud Speech Services for Speech module - Text-to-Speech and Speech-to-Text'
-    PowerShellVersion = '7.0'
+    PowerShellVersion = '7.4'
 
     RequiredModules = @(
         @{ModuleName='Speech.Core'; ModuleVersion='0.3.0'}

@@ -6,7 +6,7 @@
     Author = 'Yoshifumi Tsuda'
     Copyright = 'Copyright (c) 2026 Yoshifumi Tsuda. MIT License.'
     Description = 'OpenAI Speech module - TTS using OpenAI API and STT using Whisper'
-    PowerShellVersion = '7.0'
+    PowerShellVersion = '7.4'
 
     RequiredModules = @(
         @{ModuleName='Speech.Core'; ModuleVersion='0.3.0'}

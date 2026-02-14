@@ -5,7 +5,7 @@
     Author = 'Yoshifumi Tsuda'
     Copyright = 'Copyright (c) 2026 Yoshifumi Tsuda. MIT License.'
     Description = 'PowerShell module for speech synthesis and recognition - includes Windows, Azure, OpenAI, and Google speech services'
-    PowerShellVersion = '7.0'
+    PowerShellVersion = '7.4'
 
     RequiredModules = @(
         @{ModuleName='Speech.Core'; ModuleVersion='0.3.0'}

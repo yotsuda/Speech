@@ -2,7 +2,7 @@
 
 PowerShell modules for text-to-speech (TTS) and speech-to-text (STT) across multiple providers.
 
-[![.NET 9.0](https://img.shields.io/badge/.NET-9.0-blue)]() [![PowerShell 7.0+](https://img.shields.io/badge/PowerShell-7.0+-blue)]() [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![.NET 8.0](https://img.shields.io/badge/.NET-8.0-blue)]() [![PowerShell 7.4+](https://img.shields.io/badge/PowerShell-7.4+-blue)]() [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ## Providers
 
@@ -49,24 +49,128 @@ $text = Read-OpenAISpeech -Language ja
 $text = Read-GoogleSpeech -Language ja-JP
 ```
 
-## Installation
-
-### Build from Source
+## Installation & Configuration
 
 ```powershell
-git clone https://github.com/yotsuda/Speech.git
-cd Speech
-dotnet build Speech.sln -c Release
+Install-PSResource Speech
 ```
 
-### Deploy
+With [PowerShell.MCP](https://www.powershellgallery.com/packages/PowerShell.MCP), AI can configure everything for you:
 
 ```powershell
-# Requires elevated PowerShell
-.\Deploy.ps1
+Install-PSResource PowerShell.MCP
+claude mcp add PowerShell -s user -- "$(Get-MCPProxyPath)"
 ```
 
-This publishes all 5 modules to `C:\Program Files\PowerShell\7\Modules` with help files.
+Then just ask:
+
+```
+Install the Az module and help me create an Azure Speech resource.
+```
+```
+Help me set up OpenAI Speech. I don't have an API key yet.
+```
+```
+Guide me through setting up Google Cloud Speech.
+```
+```
+Say 'Hello world' using Windows Speech.
+```
+
+Windows SAPI works offline with zero configuration — the quickest way to get started.
+
+Settings are stored in `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`. API keys are masked when displayed.
+
+```powershell
+Get-SpeechConfig          # View all settings
+Get-SpeechConfig -Path    # Get config file path
+```
+
+<details>
+<summary>Provider setup</summary>
+
+### Azure Speech Services
+
+```powershell
+# Get key: Azure Portal > Create "Speech" resource > Keys and Endpoint
+# Free tier (F0): 0.5M chars TTS + 5h STT / month
+Set-AzureSpeechConfig -Key "your-key" -Region "eastus"
+Get-AzureSpeech -Locale ja
+Set-AzureSpeechConfig -Voice "ja-JP-NanamiNeural"
+```
+
+### OpenAI
+
+```powershell
+# Get key: https://platform.openai.com/api-keys
+Set-OpenAISpeechConfig -Key "sk-..."
+Set-OpenAISpeechConfig -Voice nova -Model tts-1
+```
+
+### Google Cloud
+
+```powershell
+# Get credential: Google Cloud Console > IAM > Service Accounts > Create key (JSON)
+Set-GoogleSpeechConfig -Credential "C:\path\to\service-account.json"
+Get-GoogleSpeech -Language ja-JP
+Set-GoogleSpeechConfig -Voice "ja-JP-Neural2-B"
+```
+
+### Windows
+
+```powershell
+# No API key needed. Add voices: Settings > Time & language > Speech
+Get-WindowsSpeech
+Set-WindowsSpeechConfig -Voice "Microsoft Haruka Desktop"
+```
+
+</details>
+
+<details>
+<summary>Common options</summary>
+
+All `Out-*Speech` cmdlets accept pipeline input and share these patterns:
+
+```powershell
+# Pipeline
+"Line 1", "Line 2" | Out-AzureSpeech
+
+# Output device selection (Tab completion available)
+Out-AzureSpeech "Hello" -OutputDevice "Speakers (Realtek)"
+Set-SpeechConfig -OutputDevice "Speakers (Realtek)"   # persist
+
+# Microphone selection
+Read-AzureSpeech -Microphone "Headset Microphone"
+Set-SpeechConfig -Microphone "Headset Microphone"     # persist
+
+# Parameter > config priority for all settings
+Out-AzureSpeech "Hello" -Key "temp-key" -Region "westus"  # one-time override
+```
+
+</details>
+
+## AI Voice Conversation
+
+With PowerShell.MCP configured, AI can speak and listen through your speakers and microphone:
+
+```
+Let's have a voice conversation in English.
+```
+```
+When I type 't', start listening and respond by voice.
+```
+```
+Find me a good English voice and play a sample.
+```
+
+### Compatible MCP Clients
+
+Any MCP-compatible client that supports PowerShell.MCP can use Speech modules:
+
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (CLI)
+- [Claude Desktop](https://claude.ai/download)
+- [GitHub Copilot (VS Code)](https://code.visualstudio.com/docs/copilot/overview)
+- Any other MCP-compatible client
 
 ## Cmdlet Reference
 
@@ -118,100 +222,29 @@ Use `Get-Help <cmdlet> -Full` for detailed documentation.
 
 </details>
 
-## Configuration
-
-Settings are stored in `~/.speech/config.json`. API keys are masked when displayed.
-
-```powershell
-Get-SpeechConfig          # View all settings
-Get-SpeechConfig -Path    # Get config file path
-```
-
-<details>
-<summary>Provider setup</summary>
-
-### Azure Speech Services
-
-```powershell
-# Get key: Azure Portal > Create "Speech" resource > Keys and Endpoint
-# Free tier (F0): 0.5M chars TTS + 5h STT / month
-Set-AzureSpeechConfig -Key "your-key" -Region "eastus"
-Get-AzureSpeech -Locale ja | Format-Table ShortName, DisplayName, Gender
-Set-AzureSpeechConfig -Voice "ja-JP-NanamiNeural"
-```
-
-### OpenAI
-
-```powershell
-# Get key: https://platform.openai.com/api-keys
-Set-OpenAISpeechConfig -Key "sk-..."
-Set-OpenAISpeechConfig -Voice nova -Model tts-1
-```
-
-### Google Cloud
-
-```powershell
-# Get credential: Google Cloud Console > IAM > Service Accounts > Create key (JSON)
-Set-GoogleSpeechConfig -Credential "C:\path\to\service-account.json"
-Get-GoogleSpeech -Language ja-JP | Format-Table Name, Gender
-Set-GoogleSpeechConfig -Voice "ja-JP-Neural2-B"
-```
-
-### Windows
-
-```powershell
-# No API key needed. Add voices: Settings > Time & language > Speech
-Get-WindowsSpeech
-Set-WindowsSpeechConfig -Voice "Microsoft Haruka Desktop"
-```
-
-</details>
-
-<details>
-<summary>Common options</summary>
-
-All `Out-*Speech` cmdlets accept pipeline input and share these patterns:
-
-```powershell
-# Pipeline
-"Line 1", "Line 2" | Out-AzureSpeech
-
-# Output device selection (Tab completion available)
-Out-AzureSpeech "Hello" -OutputDevice "Speakers (Realtek)"
-Set-SpeechConfig -OutputDevice "Speakers (Realtek)"   # persist
-
-# Microphone selection
-Read-AzureSpeech -Microphone "Headset Microphone"
-Set-SpeechConfig -Microphone "Headset Microphone"     # persist
-
-# Parameter > config priority for all settings
-Out-AzureSpeech "Hello" -Key "temp-key" -Region "westus"  # one-time override
-```
-
-</details>
-
 ## Tab Completion
 
-Most parameters support <kbd>Tab</kbd> completion. Voice and language lists are fetched from each provider's API and cached for the session.
+Most parameters support <kbd>Tab</kbd> or <kbd>Ctrl</kbd>+<kbd>Space</kbd> completion. Voice and language lists are fetched from each provider's API and cached for the session.
 
-| Parameter | Completion Source | Cmdlets |
-|-----------|------------------|---------|
-| `-Voice` | Installed SAPI voices | `Out-WindowsSpeech`, `Set-WindowsSpeechConfig` |
-| `-Voice` | Azure voice API (400+) | `Out-AzureSpeech`, `Set-AzureSpeechConfig` |
-| `-Voice` | OpenAI voice list | `Out-OpenAISpeech`, `Set-OpenAISpeechConfig` |
-| `-Voice` | Google voice API | `Out-GoogleSpeech`, `Set-GoogleSpeechConfig` |
-| `-Language` | Azure locales from API | `Out-AzureSpeech`, `Read-AzureSpeech` |
-| `-Language` | OpenAI language codes | `Read-OpenAISpeech` |
-| `-Language` | Google locales from API | `Out-GoogleSpeech`, `Read-GoogleSpeech`, `Get-GoogleSpeech` |
-| `-Culture` | Installed Windows cultures | `Get-WindowsSpeech`, `Read-WindowsSpeech` |
-| `-Model` | OpenAI TTS/STT models | `Out-OpenAISpeech`, `Read-OpenAISpeech`, `Set-OpenAISpeechConfig` |
-| `-Microphone` | System audio input devices | All `Read-*Speech`, `Set-SpeechConfig`, `Test-Microphone` |
-| `-OutputDevice` | System audio output devices | All `Out-*Speech`, `Set-SpeechConfig` |
+| Cmdlet | Tab-completable Parameters |
+|--------|---------------------------|
+| `Out-WindowsSpeech` | `-Voice`, `-OutputDevice` |
+| `Out-AzureSpeech` | `-Language`, `-Voice`, `-OutputDevice` |
+| `Out-OpenAISpeech` | `-Model`, `-Voice`, `-OutputDevice` |
+| `Out-GoogleSpeech` | `-Language`, `-Voice`, `-OutputDevice` |
+| `Read-WindowsSpeech` | `-Culture`, `-Microphone` |
+| `Read-AzureSpeech` | `-Language`, `-Microphone` |
+| `Read-OpenAISpeech` | `-Language`, `-Model`, `-Microphone` |
+| `Read-GoogleSpeech` | `-Language`, `-Microphone` |
+| `Get-WindowsSpeech` | `-Culture` |
+| `Get-AzureSpeech` | `-Locale` |
+| `Get-GoogleSpeech` | `-Language` |
+| `Set-*SpeechConfig` | `-Voice`, `-Microphone`, `-OutputDevice` |
 
 ```powershell
-# Example: type -Voice then press Tab
-Out-AzureSpeech "Hello" -Voice <Tab>
-# → ja-JP-NanamiNeural, en-US-JennyNeural, ...
+# Language narrows the voice list
+Out-AzureSpeech "Hello" -Language <Tab> -Voice <Tab>
+# → en-US-JennyNeural, en-US-GuyNeural, ...
 
 Out-OpenAISpeech "Hello" -Voice <Tab>
 # → alloy, ash, ballad, coral, echo, fable, nova, onyx, sage, shimmer, verse

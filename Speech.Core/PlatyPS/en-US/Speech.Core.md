@@ -32,7 +32,7 @@ Get-SpeechConfig
 ```
 
 ## Configuration
-Settings are stored in `~/.speech/config.json`. Common settings (Rate, Volume, Language, Microphone, OutputDevice) apply across all providers. Provider-specific settings are managed by each provider module:
+Settings are stored in `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`. Common settings (Rate, Volume, Language, Microphone, OutputDevice) apply across all providers. Provider-specific settings are managed by each provider module:
 
 - `Set-AzureSpeechConfig` - Azure voice, key, region, pitch
 - `Set-OpenAISpeechConfig` - OpenAI voice, model, STT model, key

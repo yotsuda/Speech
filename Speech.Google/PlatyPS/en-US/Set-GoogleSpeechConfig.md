@@ -18,7 +18,7 @@ Set-GoogleSpeechConfig [-Voice <String>] [-Credential <String>] [-ProgressAction
 ```
 
 ## DESCRIPTION
-Saves Google Cloud settings to `~/.speech/config.json`. See EXAMPLES for initial setup workflow.
+Saves Google Cloud settings to `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`. See EXAMPLES for initial setup workflow.
 
 ## EXAMPLES
 

@@ -17,7 +17,7 @@ Get-SpeechConfig [-Path] [-ProgressAction <ActionPreference>] [<CommonParameters
 ```
 
 ## DESCRIPTION
-Displays all speech configuration settings stored in `~/.speech/config.json`. Shows common settings (Rate, Volume, Language, Microphone, OutputDevice) and provider-specific settings for each installed module. API keys are masked for security (only last 4 characters shown).
+Displays all speech configuration settings stored in `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`. Shows common settings (Rate, Volume, Language, Microphone, OutputDevice) and provider-specific settings for each installed module. API keys are masked for security (only last 4 characters shown).
 
 ## EXAMPLES
 
@@ -33,7 +33,7 @@ Displays all configuration sections. Only installed provider sections are shown.
 Get-SpeechConfig -Path
 ```
 
-Returns the full path to the configuration file (e.g., `C:\Users\user\.speech\config.json`).
+Returns the full path to the configuration file (e.g., `C:\Users\user\Documents\PowerShell\Modules\Speech\SpeechConfig.json`).
 
 ### Example 3: Open config in editor
 ```powershell

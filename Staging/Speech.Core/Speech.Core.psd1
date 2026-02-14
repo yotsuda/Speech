@@ -6,7 +6,7 @@
     Author = 'Yoshifumi Tsuda'
     Copyright = 'Copyright (c) 2026 Yoshifumi Tsuda. MIT License.'
     Description = 'Core module for Speech - configuration management and utilities'
-    PowerShellVersion = '7.0'
+    PowerShellVersion = '7.4'
 
     RequiredAssemblies = @(
         'NAudio.dll',

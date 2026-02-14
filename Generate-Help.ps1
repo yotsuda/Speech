@@ -50,7 +50,7 @@ Get-SpeechConfig
 ```
 
 ## Configuration
-Settings are stored in `~/.speech/config.json`. Common settings (Rate, Volume, Language, Microphone, OutputDevice) apply across all providers. Provider-specific settings are managed by each provider module:
+Settings are stored in `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`. Common settings (Rate, Volume, Language, Microphone, OutputDevice) apply across all providers. Provider-specific settings are managed by each provider module:
 
 - `Set-AzureSpeechConfig` - Azure voice, key, region, pitch
 - `Set-OpenAISpeechConfig` - OpenAI voice, model, STT model, key
@@ -91,7 +91,7 @@ Get-SpeechConfig [-Path] [-ProgressAction <ActionPreference>] [<CommonParameters
 ```
 
 ## DESCRIPTION
-Displays all speech configuration settings stored in `~/.speech/config.json`. Shows common settings (Rate, Volume, Language, Microphone, OutputDevice) and provider-specific settings for each installed module. API keys are masked for security (only last 4 characters shown).
+Displays all speech configuration settings stored in `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`. Shows common settings (Rate, Volume, Language, Microphone, OutputDevice) and provider-specific settings for each installed module. API keys are masked for security (only last 4 characters shown).
 
 ## EXAMPLES
 
@@ -107,7 +107,7 @@ Displays all configuration sections. Only installed provider sections are shown.
 Get-SpeechConfig -Path
 ```
 
-Returns the full path to the configuration file (e.g., `C:\Users\user\.speech\config.json`).
+Returns the full path to the configuration file (e.g., `C:\Users\user\Documents\PowerShell\Modules\Speech\SpeechConfig.json`).
 
 ### Example 3: Open config in editor
 ```powershell
@@ -188,7 +188,7 @@ Set-SpeechConfig [-Rate <Double>] [-Volume <Int32>] [-Microphone <String>] [-Out
 ```
 
 ## DESCRIPTION
-Configures common speech settings that apply to all provider modules. Settings are persisted to `~/.speech/config.json`.
+Configures common speech settings that apply to all provider modules. Settings are persisted to `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`.
 
 For provider-specific settings (API keys, voices, etc.), use the dedicated cmdlets:
 
@@ -1184,7 +1184,7 @@ Set-AzureSpeechConfig [-Voice <String>] [-Pitch <Int32>] [-Key <String>] [-Regio
 ```
 
 ## DESCRIPTION
-Saves Azure Speech settings to `~/.speech/config.json`.
+Saves Azure Speech settings to `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`.
 
 ### Initial Setup
 ```powershell
@@ -1824,7 +1824,7 @@ Set-OpenAISpeechConfig [-Voice <String>] [-Model <String>] [-STTModel <String>] 
 ```
 
 ## DESCRIPTION
-Saves OpenAI settings to `~/.speech/config.json`.
+Saves OpenAI settings to `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`.
 
 ### Setup
 ```powershell
@@ -2501,7 +2501,7 @@ Set-GoogleSpeechConfig [-Voice <String>] [-Credential <String>] [-ProgressAction
 ```
 
 ## DESCRIPTION
-Saves Google Cloud settings to `~/.speech/config.json`.
+Saves Google Cloud settings to `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`.
 
 ### Setup
 ```powershell
@@ -3119,7 +3119,7 @@ Set-WindowsSpeechConfig [-Voice <String>] [-ProgressAction <ActionPreference>] [
 ```
 
 ## DESCRIPTION
-Saves Windows SAPI voice setting to `~/.speech/config.json`.
+Saves Windows SAPI voice setting to `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`.
 
 ### Setup
 ```powershell

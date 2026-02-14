@@ -18,7 +18,7 @@ Set-AzureSpeechConfig [-Voice <String>] [-Pitch <Int32>] [-Key <String>] [-Regio
 ```
 
 ## DESCRIPTION
-Saves Azure Speech settings to `~/.speech/config.json`. See EXAMPLES for initial setup workflow.
+Saves Azure Speech settings to `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`. See EXAMPLES for initial setup workflow.
 
 ## EXAMPLES
 

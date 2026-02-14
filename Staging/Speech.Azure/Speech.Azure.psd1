@@ -6,7 +6,7 @@
     Author = 'Yoshifumi Tsuda'
     Copyright = 'Copyright (c) 2026 Yoshifumi Tsuda. MIT License.'
     Description = 'Azure Speech Services module for Speech - TTS and STT using Azure Cognitive Services'
-    PowerShellVersion = '7.0'
+    PowerShellVersion = '7.4'
 
     RequiredModules = @(
         @{ModuleName='Speech.Core'; ModuleVersion='0.3.0'}

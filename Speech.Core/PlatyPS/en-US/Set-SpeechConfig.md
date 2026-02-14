@@ -18,7 +18,7 @@ Set-SpeechConfig [-Rate <Double>] [-Volume <Int32>] [-Microphone <String>] [-Out
 ```
 
 ## DESCRIPTION
-Configures common speech settings that apply to all provider modules. Settings are persisted to `~/.speech/config.json`.
+Configures common speech settings that apply to all provider modules. Settings are persisted to `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`.
 
 For provider-specific settings (API keys, voices, etc.), use the dedicated cmdlets:
 

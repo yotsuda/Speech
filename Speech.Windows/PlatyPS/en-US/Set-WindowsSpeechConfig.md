@@ -17,7 +17,7 @@ Set-WindowsSpeechConfig [-Voice <String>] [-ProgressAction <ActionPreference>] [
 ```
 
 ## DESCRIPTION
-Saves Windows SAPI voice setting to `~/.speech/config.json`. See EXAMPLES for setup workflow.
+Saves Windows SAPI voice setting to `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`. See EXAMPLES for setup workflow.
 
 ## EXAMPLES
 

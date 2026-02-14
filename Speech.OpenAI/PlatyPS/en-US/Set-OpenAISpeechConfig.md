@@ -18,7 +18,7 @@ Set-OpenAISpeechConfig [-Voice <String>] [-Model <String>] [-STTModel <String>] 
 ```
 
 ## DESCRIPTION
-Saves OpenAI settings to `~/.speech/config.json`. See EXAMPLES for initial setup workflow.
+Saves OpenAI settings to `~/Documents/PowerShell/Modules/Speech/SpeechConfig.json`. See EXAMPLES for initial setup workflow.
 
 ## EXAMPLES
 
