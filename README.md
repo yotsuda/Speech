@@ -55,7 +55,7 @@ $text = Read-GoogleSpeech -Language ja-JP
 Install-PSResource Speech
 ```
 
-With [PowerShell.MCP](https://www.powershellgallery.com/packages/PowerShell.MCP), AI can configure everything for you:
+With [PowerShell.MCP](https://github.com/yotsuda/PowerShell.MCP#readme), AI can configure everything for you:
 
 ```powershell
 Install-PSResource PowerShell.MCP
@@ -151,7 +151,7 @@ Out-AzureSpeech "Hello" -Key "temp-key" -Region "westus"  # one-time override
 
 ## AI Voice Conversation
 
-With PowerShell.MCP configured, AI can speak and listen through your speakers and microphone:
+With [PowerShell.MCP](https://github.com/yotsuda/PowerShell.MCP#readme) configured, AI can speak and listen through your speakers and microphone:
 
 ```
 Let's have a voice conversation in English.
