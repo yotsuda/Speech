@@ -4,7 +4,7 @@
     CompatiblePSEditions = @('Core')
     Author = 'Yoshifumi Tsuda'
     Copyright = 'Copyright (c) 2026 Yoshifumi Tsuda. MIT License.'
-    Description = 'PowerShell module for speech synthesis and recognition - includes Windows, Azure, OpenAI, and Google speech services'
+    Description = 'PowerShell module for speech synthesis and recognition - includes Windows, Azure, OpenAI, Google, and Amazon speech services'
     PowerShellVersion = '7.4'
 
     RequiredModules = @(
@@ -13,6 +13,7 @@
         @{ModuleName='Speech.Azure'; ModuleVersion='0.3.0'}
         @{ModuleName='Speech.OpenAI'; ModuleVersion='0.3.0'}
         @{ModuleName='Speech.Google'; ModuleVersion='0.3.0'}
+        @{ModuleName='Speech.Amazon'; ModuleVersion='0.3.0'}
     )
 
     CmdletsToExport = @()
@@ -21,11 +22,11 @@
 
     PrivateData = @{
         PSData = @{
-            Tags = @('Speech', 'TTS', 'STT', 'Recognition', 'Azure', 'Windows', 'OpenAI', 'Whisper', 'Google', 'Cloud')
+            Tags = @('Speech', 'TTS', 'STT', 'Recognition', 'Azure', 'Windows', 'OpenAI', 'Whisper', 'Google', 'Amazon', 'Polly', 'Cloud')
             IconUri = 'https://raw.githubusercontent.com/yotsuda/Speech/main/assets/icon.svg'
             LicenseUri = 'https://github.com/yotsuda/Speech/blob/main/LICENSE'
             ProjectUri = 'https://github.com/yotsuda/Speech'
-            ReleaseNotes = 'v0.3.0 - Initial release. Unified speech module including Windows, Azure, OpenAI, and Google speech services.'
+            ReleaseNotes = 'v0.3.0 - Initial release. Unified speech module including Windows, Azure, OpenAI, Google, and Amazon speech services.'
         }
     }
 }

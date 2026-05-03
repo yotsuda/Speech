@@ -630,6 +630,78 @@ namespace Speech.Core
             SaveConfig(config);
             return true;
         }
+
+        /// <summary>
+        /// Updates Amazon access key setting if parameter was specified
+        /// </summary>
+        public static bool UpdateAmazonAccessKeyIfSpecified(string? parameterValue)
+        {
+            if (parameterValue == null)
+                return false;
+
+            var config = GetConfig();
+            if (config.Amazon?.AccessKey == parameterValue)
+                return false;
+
+            config.Amazon ??= new AmazonConfig();
+            config.Amazon.AccessKey = parameterValue;
+            SaveConfig(config);
+            return true;
+        }
+
+        /// <summary>
+        /// Updates Amazon secret key setting if parameter was specified
+        /// </summary>
+        public static bool UpdateAmazonSecretKeyIfSpecified(string? parameterValue)
+        {
+            if (parameterValue == null)
+                return false;
+
+            var config = GetConfig();
+            if (config.Amazon?.SecretKey == parameterValue)
+                return false;
+
+            config.Amazon ??= new AmazonConfig();
+            config.Amazon.SecretKey = parameterValue;
+            SaveConfig(config);
+            return true;
+        }
+
+        /// <summary>
+        /// Updates Amazon region setting if parameter was specified
+        /// </summary>
+        public static bool UpdateAmazonRegionIfSpecified(string? parameterValue)
+        {
+            if (parameterValue == null)
+                return false;
+
+            var config = GetConfig();
+            if (config.Amazon?.Region == parameterValue)
+                return false;
+
+            config.Amazon ??= new AmazonConfig();
+            config.Amazon.Region = parameterValue;
+            SaveConfig(config);
+            return true;
+        }
+
+        /// <summary>
+        /// Updates Amazon voice setting if parameter was specified
+        /// </summary>
+        public static bool UpdateAmazonVoiceIfSpecified(string? parameterValue)
+        {
+            if (parameterValue == null)
+                return false;
+
+            var config = GetConfig();
+            if (config.Amazon?.Voice == parameterValue)
+                return false;
+
+            config.Amazon ??= new AmazonConfig();
+            config.Amazon.Voice = parameterValue;
+            SaveConfig(config);
+            return true;
+        }
     }
 
     /// <summary>
@@ -642,6 +714,7 @@ namespace Speech.Core
         public AzureConfig? Azure { get; set; }
         public OpenAIConfig? OpenAI { get; set; }
         public GoogleConfig? Google { get; set; }
+        public AmazonConfig? Amazon { get; set; }
     }
 
     public class CommonConfig
@@ -677,6 +750,14 @@ namespace Speech.Core
     public class GoogleConfig
     {
         public string? Credential { get; set; }
+        public string? Voice { get; set; }
+    }
+
+    public class AmazonConfig
+    {
+        public string? AccessKey { get; set; }
+        public string? SecretKey { get; set; }
+        public string? Region { get; set; }
         public string? Voice { get; set; }
     }
 }

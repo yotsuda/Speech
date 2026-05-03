@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speech.Tests", "Speech.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speech.IntegrationTests", "Speech.IntegrationTests\Speech.IntegrationTests.csproj", "{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speech.Amazon", "Speech.Amazon\Speech.Amazon.csproj", "{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,18 @@ Global
 		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Release|x64.Build.0 = Release|Any CPU
 		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Release|x86.ActiveCfg = Release|Any CPU
 		{365D35A7-6E33-4C4D-BEE4-DFB01D5FD080}.Release|x86.Build.0 = Release|Any CPU
+		{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}.Debug|x64.Build.0 = Debug|Any CPU
+		{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}.Debug|x86.Build.0 = Debug|Any CPU
+		{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}.Release|x64.ActiveCfg = Release|Any CPU
+		{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}.Release|x64.Build.0 = Release|Any CPU
+		{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}.Release|x86.ActiveCfg = Release|Any CPU
+		{AED96CA0-DE9C-47C8-B022-8059CC2F87DD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

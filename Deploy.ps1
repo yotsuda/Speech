@@ -12,15 +12,16 @@ dotnet publish Speech.Windows\Speech.Windows.csproj -c Release -o Staging\Speech
 dotnet publish Speech.Azure\Speech.Azure.csproj -c Release -o Staging\Speech.Azure --nologo -v q
 dotnet publish Speech.OpenAI\Speech.OpenAI.csproj -c Release -o Staging\Speech.OpenAI --nologo -v q
 dotnet publish Speech.Google\Speech.Google.csproj -c Release -o Staging\Speech.Google --nologo -v q
+dotnet publish Speech.Amazon\Speech.Amazon.csproj -c Release -o Staging\Speech.Amazon --nologo -v q
 
 # Build help XML from PlatyPS markdown → Staging/*/en-US/
 Write-Host "`nBuilding help files..." -ForegroundColor Cyan
-foreach ($mod in @('Speech.Core','Speech.Windows','Speech.Azure','Speech.OpenAI','Speech.Google')) {
+foreach ($mod in @('Speech.Core','Speech.Windows','Speech.Azure','Speech.OpenAI','Speech.Google','Speech.Amazon')) {
     $helpScript = Join-Path $PSScriptRoot "$mod\PlatyPS\Build-Help.ps1"
     if (Test-Path $helpScript) { & $helpScript }
 }
 # Verify help XML in Staging
-foreach ($mod in @('Speech.Core','Speech.Windows','Speech.Azure','Speech.OpenAI','Speech.Google')) {
+foreach ($mod in @('Speech.Core','Speech.Windows','Speech.Azure','Speech.OpenAI','Speech.Google','Speech.Amazon')) {
     $xml = Join-Path $PSScriptRoot "Staging\$mod\en-US\$mod.dll-Help.xml"
     if (Test-Path $xml) { Write-Host "  [OK] $mod" -ForegroundColor Green }
     else { Write-Warning "  [MISSING] $mod en-US help XML" }
@@ -128,6 +129,33 @@ New-Item -ItemType Directory -Path "$target\en-US" -Force | Out-Null; Copy-Item 
 $count = (Get-ChildItem $target -Recurse -File).Count
 Write-Host "  -> $count files" -ForegroundColor Green
 
+# === Speech.Amazon ===
+Write-Host "Deploying Speech.Amazon..." -ForegroundColor Yellow
+$target = Join-Path $ModulePath 'Speech.Amazon'
+Remove-And-Create $target
+
+# Copy main module files
+foreach ($f in @('Speech.Amazon.dll','Speech.Amazon.psd1','Speech.Amazon.format.ps1xml','Speech.Amazon.deps.json')) {
+    $src = "Staging\Speech.Amazon\$f"
+    if (Test-Path $src) {
+        try { Copy-Item $src $target -Force }
+        catch { Write-Warning "  Skipped $f (locked)" }
+    }
+}
+# Copy AWS SDK DLLs
+Get-ChildItem "Staging\Speech.Amazon\AWSSDK.*.dll" | ForEach-Object {
+    try { Copy-Item $_.FullName $target -Force }
+    catch { Write-Warning "  Skipped $($_.Name) (locked)" }
+}
+# Help XML
+$helpDir = "Staging\Speech.Amazon\en-US"
+if (Test-Path $helpDir) {
+    New-Item -ItemType Directory -Path "$target\en-US" -Force | Out-Null; Copy-Item "$helpDir\*" "$target\en-US" -Force
+}
+
+$count = (Get-ChildItem $target -Recurse -File).Count
+Write-Host "  -> $count files" -ForegroundColor Green
+
 # === Speech (parent module) ===
 Write-Host "Deploying Speech..." -ForegroundColor Yellow
 $target = Join-Path $ModulePath 'Speech'
@@ -140,7 +168,7 @@ Write-Host "  -> $count files" -ForegroundColor Green
 
 # === Summary ===
 Write-Host "`n=== Deployment Summary ===" -ForegroundColor Cyan
-foreach ($mod in @('Speech.Core', 'Speech.Windows', 'Speech.Azure', 'Speech.OpenAI', 'Speech.Google', 'Speech')) {
+foreach ($mod in @('Speech.Core', 'Speech.Windows', 'Speech.Azure', 'Speech.OpenAI', 'Speech.Google', 'Speech.Amazon', 'Speech')) {
     $path = Join-Path $ModulePath $mod
     $files = Get-ChildItem $path -Recurse -File
     $size = ($files | Measure-Object -Property Length -Sum).Sum / 1MB

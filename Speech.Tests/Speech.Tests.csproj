@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Speech.Core\Speech.Core.csproj" />
     <ProjectReference Include="..\Speech.Azure\Speech.Azure.csproj" />
     <ProjectReference Include="..\Speech.Google\Speech.Google.csproj" />
+    <ProjectReference Include="..\Speech.Amazon\Speech.Amazon.csproj" />
   </ItemGroup>
 
 </Project>

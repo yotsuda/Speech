@@ -28,6 +28,7 @@ $allModules = @(
     'Speech.Azure',
     'Speech.OpenAI',
     'Speech.Google',
+    'Speech.Amazon',
     'Speech'
 )
 
@@ -89,6 +90,20 @@ foreach ($mod in $modulesToPublish) {
                 Copy-Item $rtSrc "$dest\runtimes\$rt" -Recurse -Force
             }
         }
+        # Help XML
+        $helpSrc = Join-Path $src 'en-US'
+        if (Test-Path $helpSrc) {
+            New-Item -ItemType Directory -Path "$dest\en-US" -Force | Out-Null
+            Copy-Item "$helpSrc\*" "$dest\en-US" -Force
+        }
+    }
+    elseif ($mod -eq 'Speech.Amazon') {
+        # Amazon: copy module files + AWS SDK DLLs
+        foreach ($f in @("$mod.dll", "$mod.psd1", "$mod.format.ps1xml", "$mod.deps.json")) {
+            $filePath = Join-Path $src $f
+            if (Test-Path $filePath) { Copy-Item $filePath $dest -Force }
+        }
+        Get-ChildItem $src -Filter 'AWSSDK.*.dll' | Copy-Item -Destination $dest -Force
         # Help XML
         $helpSrc = Join-Path $src 'en-US'
         if (Test-Path $helpSrc) {

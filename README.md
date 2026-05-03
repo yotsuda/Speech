@@ -12,6 +12,7 @@ PowerShell modules for text-to-speech (TTS) and speech-to-text (STT) across mult
 | **Speech.Azure** | 400+ neural voices | Real-time streaming | Azure Speech key |
 | **Speech.OpenAI** | 11 multilingual voices | Whisper (batch) | OpenAI API key |
 | **Speech.Google** | Standard/WaveNet/Neural2 | Batch | Google Cloud credential JSON |
+| **Speech.Amazon** | Neural/standard voices | Real-time streaming | AWS access key + secret key |
 | **Speech.Core** | — | — | (shared config, microphone, output device) |
 
 ## Platform Support
@@ -21,6 +22,7 @@ PowerShell modules for text-to-speech (TTS) and speech-to-text (STT) across mult
 | `Out-*Speech` (all providers) | Yes | Yes |
 | `Read-AzureSpeech` | Yes | Yes |
 | `Read-GoogleSpeech` | Yes | Yes |
+| `Read-AmazonSpeech` | Yes | Yes |
 | `Read-WindowsSpeech` | Yes | No (SAPI) |
 | `Read-OpenAISpeech` | Yes | No (NAudio WinMM) |
 
@@ -42,11 +44,16 @@ Out-OpenAISpeech "Hello" -Voice nova
 Set-GoogleSpeechConfig -Credential "path/to/key.json"
 Out-GoogleSpeech "Hello"
 
+# Amazon
+Set-AmazonSpeechConfig -AccessKey "AKIA..." -SecretKey "..." -Region "ap-northeast-1"
+Out-AmazonSpeech "Hello" -Voice Joanna
+
 # Speech recognition (all providers)
 $text = Read-WindowsSpeech
 $text = Read-AzureSpeech -Language ja-JP
 $text = Read-OpenAISpeech -Language ja
 $text = Read-GoogleSpeech -Language ja-JP
+$text = Read-AmazonSpeech -Language ja-JP
 ```
 
 ## Installation & Configuration
@@ -72,6 +79,9 @@ Help me set up OpenAI Speech. I don't have an API key yet.
 ```
 ```
 Guide me through setting up Google Cloud Speech.
+```
+```
+Help me set up Amazon Polly with my AWS credentials.
 ```
 ```
 Say 'Hello world' using Windows Speech.
@@ -114,6 +124,16 @@ Set-OpenAISpeechConfig -Voice nova -Model tts-1
 Set-GoogleSpeechConfig -Credential "C:\path\to\service-account.json"
 Get-GoogleSpeech -Language ja-JP
 Set-GoogleSpeechConfig -Voice "ja-JP-Neural2-B"
+```
+
+### Amazon Polly / Transcribe
+
+```powershell
+# Get credentials: AWS Console > IAM > Users > Create access key
+# Free tier: 5M chars TTS + 60 min STT / month (first 12 months)
+Set-AmazonSpeechConfig -AccessKey "AKIA..." -SecretKey "..." -Region "ap-northeast-1"
+Get-AmazonSpeech -Language ja-JP
+Set-AmazonSpeechConfig -Voice "Mizuki"
 ```
 
 ### Windows
@@ -188,7 +208,7 @@ Plus shared cmdlets in Speech.Core: `Get-SpeechConfig`, `Set-SpeechConfig`, `Get
 Use `Get-Help <cmdlet> -Full` for detailed documentation.
 
 <details>
-<summary>All 20 cmdlets</summary>
+<summary>All 24 cmdlets</summary>
 
 **Speech.Core** — Shared configuration and audio devices
 - `Get-SpeechConfig` — Display current configuration (`-Path` for file location)
@@ -214,6 +234,12 @@ Use `Get-Help <cmdlet> -Full` for detailed documentation.
 - `Get-GoogleSpeech` — List available voices (`-Language` to filter)
 - `Set-GoogleSpeechConfig` — Set `-Voice`, `-Credential`
 
+**Speech.Amazon** — Amazon Polly / Transcribe
+- `Out-AmazonSpeech` — TTS with neural/standard voices (`-Voice`, `-Language`, `-Rate`)
+- `Read-AmazonSpeech` — Real-time streaming STT (`-Language`)
+- `Get-AmazonSpeech` — List available voices (`-Language` to filter)
+- `Set-AmazonSpeechConfig` — Set `-AccessKey`, `-SecretKey`, `-Region`, `-Voice`
+
 **Speech.Windows** — Windows SAPI
 - `Out-WindowsSpeech` — Offline TTS (`-Voice`, `-Rate`, `-Volume`)
 - `Read-WindowsSpeech` — Offline STT (`-Language`, `-Confidence`, `-Detailed`)
@@ -232,13 +258,16 @@ Most parameters support <kbd>Tab</kbd> or <kbd>Ctrl</kbd>+<kbd>Space</kbd> compl
 | `Out-AzureSpeech` | `-Language`, `-Voice`, `-OutputDevice` |
 | `Out-OpenAISpeech` | `-Model`, `-Voice`, `-OutputDevice` |
 | `Out-GoogleSpeech` | `-Language`, `-Voice`, `-OutputDevice` |
+| `Out-AmazonSpeech` | `-Language`, `-Voice`, `-OutputDevice` |
 | `Read-WindowsSpeech` | `-Culture`, `-Microphone` |
 | `Read-AzureSpeech` | `-Language`, `-Microphone` |
 | `Read-OpenAISpeech` | `-Language`, `-Model`, `-Microphone` |
 | `Read-GoogleSpeech` | `-Language`, `-Microphone` |
+| `Read-AmazonSpeech` | `-Language`, `-Microphone` |
 | `Get-WindowsSpeech` | `-Culture` |
 | `Get-AzureSpeech` | `-Locale` |
 | `Get-GoogleSpeech` | `-Language` |
+| `Get-AmazonSpeech` | `-Language` |
 | `Set-*SpeechConfig` | `-Voice`, `-Microphone`, `-OutputDevice` |
 
 ```powershell
@@ -280,4 +309,4 @@ Install language pack: Settings > Time & language > Language & region > Add lang
 
 [MIT](LICENSE)
 
-Third-party: [NAudio](https://github.com/naudio/NAudio) (MIT), [Azure Speech SDK](https://github.com/Azure-Samples/cognitive-services-speech-sdk) (MIT).
+Third-party: [NAudio](https://github.com/naudio/NAudio) (MIT), [Azure Speech SDK](https://github.com/Azure-Samples/cognitive-services-speech-sdk) (MIT), [AWS SDK for .NET](https://github.com/aws/aws-sdk-net) (Apache-2.0).
