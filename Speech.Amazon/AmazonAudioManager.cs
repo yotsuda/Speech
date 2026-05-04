@@ -58,9 +58,10 @@ namespace Speech.Amazon
                 await response.AudioStream.CopyToAsync(ms);
                 return ms.ToArray();
             }
-            catch (AmazonPollyException ex) when (ex.ErrorCode == "InvalidParameterValue" && ex.Message.Contains("engine"))
+            catch (AmazonPollyException ex) when (ex.Message.Contains("engine", StringComparison.OrdinalIgnoreCase))
             {
                 // Fallback to standard engine if neural is not available for this voice
+                // (covers both InvalidParameterValue and ValidationException with engine-related messages)
                 request.Engine = Engine.Standard;
                 var response = await _pollyClient.SynthesizeSpeechAsync(request);
                 using var ms = new MemoryStream();

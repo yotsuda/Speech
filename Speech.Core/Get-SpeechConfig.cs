@@ -45,6 +45,7 @@ namespace Speech.Core
             var azureInstalled = IsModuleInstalled("Speech.Azure");
             var openAIInstalled = IsModuleInstalled("Speech.OpenAI");
             var googleInstalled = IsModuleInstalled("Speech.Google");
+            var amazonInstalled = IsModuleInstalled("Speech.Amazon");
 
             var sb = new StringBuilder();
 
@@ -93,6 +94,17 @@ namespace Speech.Core
                 sb.AppendLine("[Google]");
                 sb.AppendLine($"  Credential : {config.Google?.Credential ?? "(not set)"}");
                 sb.AppendLine($"  Voice      : {config.Google?.Voice ?? "(not set)"}");
+            }
+
+            // Amazon settings (only if Speech.Amazon is installed)
+            if (amazonInstalled)
+            {
+                sb.AppendLine();
+                sb.AppendLine("[Amazon]");
+                sb.AppendLine($"  Voice      : {config.Amazon?.Voice ?? "(not set)"}");
+                sb.AppendLine($"  Region     : {config.Amazon?.Region ?? "(not set)"}");
+                sb.AppendLine($"  AccessKey  : {MaskKey(config.Amazon?.AccessKey)}");
+                sb.AppendLine($"  SecretKey  : {MaskKey(config.Amazon?.SecretKey)}");
             }
 
             WriteObject(sb.ToString());
